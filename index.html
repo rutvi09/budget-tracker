@@ -3,119 +3,88 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Advanced Budget Tracker</title>
-
+  <title>Welcome — Budget Tracker</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- html2canvas + jsPDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <h1>💼 Advanced Budget Tracker</h1>
+  <div class="intro-wrap">
+    <div class="intro-card card">
+      <h1>Welcome 👋</h1>
+      <p class="lead">Start your financial journey. Choose your preferred display currency and theme below — you can change them later anytime inside the app.</p>
 
-      <div class="top-controls">
-        <div class="control currency-control">
-          <label for="currency-select">Display Currency</label>
-          <select id="currency-select" title="Select display currency"></select>
-        </div>
+      <div class="form-row">
+        <label for="initial-currency">Choose display currency</label>
+        <select id="initial-currency"></select>
+      </div>
 
-        <div class="control spacer-control">
-          <!-- spacing intentionally here -->
-        </div>
-
-        <div class="control mode-control">
-          <label for="theme-toggle">Theme</label>
-          <button id="theme-toggle" class="btn small">🌙</button>
+      <div class="form-row">
+        <label>Choose theme</label>
+        <div style="display:flex; gap:10px;">
+          <button id="theme-light" class="btn small">Light 🌞</button>
+          <button id="theme-dark" class="btn small">Dark 🌙</button>
         </div>
       </div>
-    </header>
 
-    <main class="main-grid">
-      <!-- Left: Form & Goal -->
-      <section class="card form-card">
-        <h2>➕ Add Expense</h2>
-        <form id="expense-form" class="form">
-          <input id="expense-title" placeholder="Title (e.g., Pizza)" required />
-          <div class="row">
-            <input id="expense-amount" type="number" step="0.01" placeholder="Amount" required />
-            <select id="input-currency" title="Currency for this amount"></select>
-          </div>
+      <div style="height:12px;"></div>
 
-          <div class="row">
-            <select id="expense-category">
-              <option value="Food">🍔 Food</option>
-              <option value="Shopping">🛍️ Shopping</option>
-              <option value="Travel">✈️ Travel</option>
-              <option value="Bills">💡 Bills</option>
-              <option value="Entertainment">🎮 Entertainment</option>
-              <option value="Other">📦 Other</option>
-            </select>
+      <div class="form-row">
+        <button id="start-app" class="btn primary large">Start Budget Tracker</button>
+      </div>
 
-            <input id="expense-date" type="date" />
-          </div>
+      <p class="muted small" style="margin-top:14px;">You can change the currency, theme, and other preferences from inside the app later.</p>
+    </div>
 
-          <div class="row actions">
-            <button type="submit" class="btn primary">Add</button>
-            <button type="button" id="clear-all" class="btn warn">Clear All</button>
-          </div>
-        </form>
-
-        <hr />
-
-        <h3>🎯 Savings Goal</h3>
-        <div class="goal">
-          <div class="row">
-            <input id="goal-amount-input" type="number" step="0.01" placeholder="Goal amount" />
-            <select id="goal-currency" title="Goal currency"></select>
-          </div>
-          <div class="row actions">
-            <button id="set-goal" class="btn">Set Goal</button>
-            <button id="clear-goal" class="btn">Clear Goal</button>
-          </div>
-          <p id="goal-status" class="muted"></p>
-        </div>
-      </section>
-
-      <!-- Right: Summary + Charts -->
-      <section class="card summary-card">
-        <div class="summary-top">
-          <div class="summary-item">
-            <div class="label">Total Spent</div>
-            <div id="total-spent" class="value">0</div>
-          </div>
-          <div class="summary-item">
-            <div class="label">Remaining / Goal</div>
-            <div id="remaining-goal" class="value muted">—</div>
-          </div>
-        </div>
-
-        <div class="charts">
-          <canvas id="barChart" height="200"></canvas>
-          <canvas id="pieChart" height="200" style="margin-top:12px;"></canvas>
-        </div>
-
-        <div class="export-row">
-          <button id="download-pdf" class="btn">Download PDF</button>
-          <button id="download-img" class="btn">Download Image</button>
-        </div>
-      </section>
-
-      <!-- Bottom: Expense List -->
-      <section class="card list-card">
-        <h2>🧾 Expenses</h2>
-        <ul id="expense-list" class="expense-list"></ul>
-      </section>
-    </main>
-
-    <footer class="footer muted">
-      Rates provided by exchangerate.host — client-side conversion (cached). See docs in code/comments.
-    </footer>
+    <footer class="footer muted">Advanced Budget Tracker — mobile friendly</footer>
   </div>
 
-  <script src="app.js"></script>
+  <script>
+    // Currency list (same as app)
+    const CURRENCIES = {
+      "USD":"$ - USD","INR":"₹ - INR","EUR":"€ - EUR","GBP":"£ - GBP","JPY":"¥ - JPY",
+      "AUD":"A$ - AUD","CAD":"C$ - CAD","CHF":"CHF - CHF","CNY":"¥ - CNY","HKD":"HK$ - HKD",
+      "SGD":"S$ - SGD","KRW":"₩ - KRW","AED":"د.إ - AED","ZAR":"R - ZAR","PHP":"₱ - PHP",
+      "MYR":"RM - MYR","THB":"฿ - THB","IDR":"Rp - IDR","MXN":"$ - MXN","BRL":"R$ - BRL",
+      "TRY":"₺ - TRY","SEK":"kr - SEK","NOK":"kr - NOK","DKK":"kr - DKK","PLN":"zł - PLN"
+    };
+
+    const initialCurrencySel = document.getElementById('initial-currency');
+    Object.keys(CURRENCIES).forEach(code=>{
+      const opt = document.createElement('option');
+      opt.value = code;
+      opt.textContent = CURRENCIES[code];
+      initialCurrencySel.appendChild(opt);
+    });
+
+    // default choice: try to use saved display currency if exist
+    const savedState = localStorage.getItem('bt_state_v2');
+    if(savedState){
+      try {
+        const st = JSON.parse(savedState);
+        if(st.displayCurrency) initialCurrencySel.value = st.displayCurrency;
+        if(st.theme === 'dark') document.body.classList.add('dark');
+      } catch(e){}
+    }
+
+    // theme buttons
+    document.getElementById('theme-light').addEventListener('click', ()=>{
+      localStorage.setItem('bt_initial_theme','light');
+      document.body.classList.remove('dark');
+    });
+    document.getElementById('theme-dark').addEventListener('click', ()=>{
+      localStorage.setItem('bt_initial_theme','dark');
+      document.body.classList.add('dark');
+    });
+
+    // start button -> save initial choices then open tracker.html
+    document.getElementById('start-app').addEventListener('click', ()=>{
+      const currency = initialCurrencySel.value || 'USD';
+      localStorage.setItem('bt_initial_displayCurrency', currency);
+      // If user previously chose a theme, keep it; if not, ensure default 'light'
+      const t = localStorage.getItem('bt_initial_theme') || 'light';
+      localStorage.setItem('bt_initial_theme', t);
+      // Navigate to tracker
+      window.location.href = 'tracker.html';
+    });
+  </script>
 </body>
 </html>
