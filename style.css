@@ -75,16 +75,13 @@ canvas {
     .container {
         padding: 20px;
     }
-
     h1 {
         font-size: 1.6rem;
     }
-
     input, select, button {
         font-size: 0.95rem;
         padding: 10px;
     }
-
     #expense-list li {
         font-size: 0.9rem;
         flex-direction: column;
