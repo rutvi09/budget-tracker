@@ -17,20 +17,17 @@
 
   <main class="intro-wrap">
     <div class="intro-card card">
-      <div class="intro-top">
+      <div class="intro-top" style="text-align:center">
         <div class="mascot-large">🐷</div>
-        <h1>Budget Buddy</h1>
-        <p class="tagline">Track. Save. Smile.</p>
+        <h1 class="hook-line">Track Your Money. Control Your Future.</h1>
       </div>
 
-      <p class="lead">Start your money-smart journey. Choose your preferred display currency and theme below — you can change these anytime inside the app.</p>
-
-      <div class="form-row">
+      <div class="form-row" style="margin-top:18px">
         <label for="initial-currency">Choose display currency</label>
         <select id="initial-currency" class="select"></select>
       </div>
 
-      <div class="form-row">
+      <div class="form-row" style="margin-top:6px">
         <label>Choose theme</label>
         <div class="theme-choices">
           <button id="theme-light" class="btn small">Light 🌞</button>
@@ -40,17 +37,14 @@
 
       <div style="height:12px;"></div>
       <div class="form-row">
-        <button id="start-app" class="btn primary large">Start Budget Tracker</button>
+        <button id="start-app" class="btn primary large">Start Tracking</button>
       </div>
-
-      <p class="muted small" style="margin-top:12px;">You can change currency, theme, and other preferences inside the app later.</p>
     </div>
 
     <footer class="footer muted">Made with 💖 • Peach + Mint Theme</footer>
   </main>
 
 <script>
-  // Currency list (pastel-friendly)
   const CURRENCIES = {
     "USD":"$ - USD","INR":"₹ - INR","EUR":"€ - EUR","GBP":"£ - GBP","JPY":"¥ - JPY",
     "AUD":"A$ - AUD","CAD":"C$ - CAD","CHF":"CHF - CHF","CNY":"¥ - CNY","HKD":"HK$ - HKD",
@@ -67,7 +61,6 @@
     sel.appendChild(opt);
   });
 
-  // Use saved state if exists
   const savedState = localStorage.getItem('bt_state_v2');
   if(savedState){
     try {
@@ -99,16 +92,13 @@
     localStorage.setItem('bt_initial_displayCurrency', currency);
     const t = localStorage.getItem('bt_initial_theme') || 'light';
     localStorage.setItem('bt_initial_theme', t);
-    // small delay for nicer UX
     setTimeout(()=>{ window.location.href = 'tracker.html'; }, 160);
   });
 
-  // splash hide after short delay
   window.addEventListener('load', ()=>{
     setTimeout(()=> {
       const s = document.getElementById('splash');
       if(s) s.classList.add('splash-hide');
-      // remove after animation
       setTimeout(()=>s && s.remove(), 800);
     }, 900);
   });
