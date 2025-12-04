@@ -4,21 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Budget Tracker</title>
-    
-    <!-- CSS -->
+
     <link rel="stylesheet" href="style.css">
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <!-- html2canvas + jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
+
 <body>
     <div class="container">
         <h1>💼 Budget Tracker</h1>
-        
+
+        <!-- Currency Selector -->
+        <label>Select Currency:</label>
+        <select id="currency-select" onchange="updateUI()">
+            <option value="$">$ - USD</option>
+            <option value="₹">₹ - INR</option>
+        </select>
+
         <!-- Add Expense Form -->
         <div class="form">
             <input type="text" id="expense-title" placeholder="Expense title">
@@ -35,30 +42,28 @@
 
         <!-- Dashboard -->
         <div class="dashboard">
-            <h2>Total Spent: $<span id="total-spent">0</span></h2>
+            <h2>Total Spent: <span id="total-spent">0</span></h2>
 
             <h2>Set Savings Goal:</h2>
             <input type="number" id="savings-goal" placeholder="Enter goal amount">
             <button type="button" onclick="updateGoal()">Set Goal</button>
-            <p>Progress: $<span id="goal-progress">0</span> / $<span id="goal-amount">0</span></p>
+            <p>Progress: <span id="goal-progress">0</span> / <span id="goal-amount">0</span></p>
             <p id="goal-msg" style="font-weight:bold; margin-top:5px;"></p>
             <p id="goal-remaining" style="font-weight:bold; margin-top:5px;"></p>
 
             <h2>Expenses:</h2>
             <ul id="expense-list"></ul>
-            
+
             <h2>Category-wise Charts:</h2>
             <canvas id="categoryBarChart"></canvas>
             <canvas id="categoryPieChart" style="margin-top:20px;"></canvas>
 
-            <!-- Download Buttons -->
             <h2>Download Data:</h2>
             <button type="button" onclick="downloadPDF()">Download as PDF</button>
             <button type="button" onclick="downloadImage()">Download as Image</button>
         </div>
     </div>
 
-    <!-- JS -->
     <script src="app.js"></script>
 </body>
 </html>
