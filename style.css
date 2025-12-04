@@ -9,21 +9,30 @@
   --shadow: 0 8px 30px rgba(15,15,15,0.06);
 }
 
+/* basic */
 *{box-sizing:border-box}
 body{
   font-family: Inter, system-ui, Arial, sans-serif;
   background:var(--bg);
   color:var(--text);
   margin:0;
-  padding:20px;
+  padding:18px;
   -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
 }
 
+/* intro page */
+.intro-wrap{max-width:720px;margin:18px auto;display:flex;flex-direction:column;align-items:center;gap:14px}
+.intro-card{width:100%;padding:20px;border-radius:12px;box-shadow:var(--shadow);background:var(--card-bg)}
+.lead{color:var(--muted)}
+.form-row{margin:10px 0;display:flex;flex-direction:column;gap:8px}
+
+/* app layout */
 .app{max-width:1100px;margin:0 auto}
 
-/* Top */
+/* Topbar */
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
-.topbar h1{font-size:1.4rem;margin:0;color:var(--primary)}
+.topbar h1{font-size:1.35rem;margin:0;color:var(--primary)}
 .top-controls{display:flex;gap:12px;align-items:center}
 .control{display:flex;flex-direction:column;gap:6px}
 .currency-control select, .mode-control button{padding:8px 10px}
@@ -43,23 +52,23 @@ body{
 .form-card h2{margin-top:0}
 .row{display:flex;gap:8px;align-items:center}
 .row input, .row select{flex:1;padding:10px;border-radius:8px;border:1px solid #ddd}
-.actions{display:flex;gap:8px}
-
+.actions{display:flex;gap:8px;flex-wrap:wrap}
 .btn{padding:8px 12px;border-radius:8px;border:0;cursor:pointer;background:var(--accent);color:#fff}
 .btn.small{padding:6px 8px}
 .btn.primary{background:var(--primary)}
 .btn.warn{background:var(--danger)}
+.btn.large{padding:12px 18px;font-size:1rem}
 .btn:active{transform:translateY(1px)}
 
-/* Summary card */
+/* Summary */
 .summary-top{display:flex;gap:12px;justify-content:space-between;align-items:center;margin-bottom:12px}
 .summary-item .label{font-size:0.85rem;color:var(--muted)}
 .summary-item .value{font-size:1.2rem;font-weight:600}
 
-/* Chart containers */
+/* Chart sizes */
 .charts canvas{width:100% !important;height:auto !important}
 
-/* Expense List */
+/* Expense list styles */
 .expense-list{list-style:none;padding:0;margin:0;max-height:360px;overflow:auto}
 .expense-list li{
   display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;margin-bottom:8px;background:#f7f9ff;border:1px solid rgba(0,0,0,0.03)
@@ -69,6 +78,18 @@ body{
 
 /* footer */
 .footer{text-align:center;padding:12px;margin-top:18px;color:var(--muted);font-size:0.9rem}
+
+/* Mobile spacing improvements */
+@media (max-width:600px){
+  body{padding:12px}
+  .card{padding:14px}
+  .topbar{flex-direction:column;align-items:flex-start;gap:12px}
+  .main-grid{gap:12px}
+  .expense-list{max-height:520px}
+  .intro-card{padding:16px}
+  .form-row input, .form-row select{width:100%}
+  .btn.large{width:100%}
+}
 
 /* Dark mode */
 body.dark{
