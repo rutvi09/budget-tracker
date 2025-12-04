@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Advanced Budget Tracker</title>
+  <title>Budget Buddy — Tracker</title>
 
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,11 +13,14 @@
 <body>
   <div class="app">
     <header class="topbar">
-      <h1>💼 Advanced Budget Tracker</h1>
+      <div class="brand">
+        <div class="mascot-small">🐷</div>
+        <h1>Budget Buddy</h1>
+      </div>
 
       <div class="top-controls">
         <div class="control currency-control">
-          <label for="currency-select">Display Currency</label>
+          <label for="currency-select">Display</label>
           <select id="currency-select" title="Select display currency"></select>
         </div>
 
@@ -102,7 +105,7 @@
     </main>
 
     <footer class="footer muted">
-      Rates provided by exchangerate.host — cached in your browser.
+      Rates by exchangerate.host — cached in your browser.
     </footer>
   </div>
 
