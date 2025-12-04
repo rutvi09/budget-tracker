@@ -3,88 +3,115 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Welcome — Budget Tracker</title>
+  <title>Welcome — Budget Buddy</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="intro-wrap">
+  <!-- Splash (short) -->
+  <div id="splash" class="splash">
+    <div class="splash-inner">
+      <div class="mascot">🐷</div>
+      <div class="splash-text">Budget Buddy</div>
+    </div>
+  </div>
+
+  <main class="intro-wrap">
     <div class="intro-card card">
-      <h1>Welcome 👋</h1>
-      <p class="lead">Start your financial journey. Choose your preferred display currency and theme below — you can change them later anytime inside the app.</p>
+      <div class="intro-top">
+        <div class="mascot-large">🐷</div>
+        <h1>Budget Buddy</h1>
+        <p class="tagline">Track. Save. Smile.</p>
+      </div>
+
+      <p class="lead">Start your money-smart journey. Choose your preferred display currency and theme below — you can change these anytime inside the app.</p>
 
       <div class="form-row">
         <label for="initial-currency">Choose display currency</label>
-        <select id="initial-currency"></select>
+        <select id="initial-currency" class="select"></select>
       </div>
 
       <div class="form-row">
         <label>Choose theme</label>
-        <div style="display:flex; gap:10px;">
+        <div class="theme-choices">
           <button id="theme-light" class="btn small">Light 🌞</button>
           <button id="theme-dark" class="btn small">Dark 🌙</button>
         </div>
       </div>
 
       <div style="height:12px;"></div>
-
       <div class="form-row">
         <button id="start-app" class="btn primary large">Start Budget Tracker</button>
       </div>
 
-      <p class="muted small" style="margin-top:14px;">You can change the currency, theme, and other preferences from inside the app later.</p>
+      <p class="muted small" style="margin-top:12px;">You can change currency, theme, and other preferences inside the app later.</p>
     </div>
 
-    <footer class="footer muted">Advanced Budget Tracker — mobile friendly</footer>
-  </div>
+    <footer class="footer muted">Made with 💖 • Peach + Mint Theme</footer>
+  </main>
 
-  <script>
-    // Currency list (same as app)
-    const CURRENCIES = {
-      "USD":"$ - USD","INR":"₹ - INR","EUR":"€ - EUR","GBP":"£ - GBP","JPY":"¥ - JPY",
-      "AUD":"A$ - AUD","CAD":"C$ - CAD","CHF":"CHF - CHF","CNY":"¥ - CNY","HKD":"HK$ - HKD",
-      "SGD":"S$ - SGD","KRW":"₩ - KRW","AED":"د.إ - AED","ZAR":"R - ZAR","PHP":"₱ - PHP",
-      "MYR":"RM - MYR","THB":"฿ - THB","IDR":"Rp - IDR","MXN":"$ - MXN","BRL":"R$ - BRL",
-      "TRY":"₺ - TRY","SEK":"kr - SEK","NOK":"kr - NOK","DKK":"kr - DKK","PLN":"zł - PLN"
-    };
+<script>
+  // Currency list (pastel-friendly)
+  const CURRENCIES = {
+    "USD":"$ - USD","INR":"₹ - INR","EUR":"€ - EUR","GBP":"£ - GBP","JPY":"¥ - JPY",
+    "AUD":"A$ - AUD","CAD":"C$ - CAD","CHF":"CHF - CHF","CNY":"¥ - CNY","HKD":"HK$ - HKD",
+    "SGD":"S$ - SGD","KRW":"₩ - KRW","AED":"د.إ - AED","ZAR":"R - ZAR","PHP":"₱ - PHP",
+    "MYR":"RM - MYR","THB":"฿ - THB","IDR":"Rp - IDR","MXN":"$ - MXN","BRL":"R$ - BRL",
+    "TRY":"₺ - TRY","SEK":"kr - SEK","NOK":"kr - NOK","DKK":"kr - DKK","PLN":"zł - PLN"
+  };
 
-    const initialCurrencySel = document.getElementById('initial-currency');
-    Object.keys(CURRENCIES).forEach(code=>{
-      const opt = document.createElement('option');
-      opt.value = code;
-      opt.textContent = CURRENCIES[code];
-      initialCurrencySel.appendChild(opt);
-    });
+  const sel = document.getElementById('initial-currency');
+  Object.keys(CURRENCIES).forEach(code=>{
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = CURRENCIES[code];
+    sel.appendChild(opt);
+  });
 
-    // default choice: try to use saved display currency if exist
-    const savedState = localStorage.getItem('bt_state_v2');
-    if(savedState){
-      try {
-        const st = JSON.parse(savedState);
-        if(st.displayCurrency) initialCurrencySel.value = st.displayCurrency;
-        if(st.theme === 'dark') document.body.classList.add('dark');
-      } catch(e){}
-    }
+  // Use saved state if exists
+  const savedState = localStorage.getItem('bt_state_v2');
+  if(savedState){
+    try {
+      const st = JSON.parse(savedState);
+      if(st.displayCurrency) sel.value = st.displayCurrency;
+    } catch(e){}
+  }
 
-    // theme buttons
-    document.getElementById('theme-light').addEventListener('click', ()=>{
-      localStorage.setItem('bt_initial_theme','light');
-      document.body.classList.remove('dark');
-    });
-    document.getElementById('theme-dark').addEventListener('click', ()=>{
-      localStorage.setItem('bt_initial_theme','dark');
-      document.body.classList.add('dark');
-    });
+  document.getElementById('theme-light').addEventListener('click', ()=>{
+    localStorage.setItem('bt_initial_theme','light');
+    document.body.classList.remove('dark');
+    highlightThemeButton();
+  });
+  document.getElementById('theme-dark').addEventListener('click', ()=>{
+    localStorage.setItem('bt_initial_theme','dark');
+    document.body.classList.add('dark');
+    highlightThemeButton();
+  });
 
-    // start button -> save initial choices then open tracker.html
-    document.getElementById('start-app').addEventListener('click', ()=>{
-      const currency = initialCurrencySel.value || 'USD';
-      localStorage.setItem('bt_initial_displayCurrency', currency);
-      // If user previously chose a theme, keep it; if not, ensure default 'light'
-      const t = localStorage.getItem('bt_initial_theme') || 'light';
-      localStorage.setItem('bt_initial_theme', t);
-      // Navigate to tracker
-      window.location.href = 'tracker.html';
-    });
-  </script>
+  function highlightThemeButton(){
+    const t = localStorage.getItem('bt_initial_theme') || 'light';
+    document.getElementById('theme-light').classList.toggle('selected', t==='light');
+    document.getElementById('theme-dark').classList.toggle('selected', t==='dark');
+  }
+  highlightThemeButton();
+
+  document.getElementById('start-app').addEventListener('click', ()=>{
+    const currency = sel.value || 'USD';
+    localStorage.setItem('bt_initial_displayCurrency', currency);
+    const t = localStorage.getItem('bt_initial_theme') || 'light';
+    localStorage.setItem('bt_initial_theme', t);
+    // small delay for nicer UX
+    setTimeout(()=>{ window.location.href = 'tracker.html'; }, 160);
+  });
+
+  // splash hide after short delay
+  window.addEventListener('load', ()=>{
+    setTimeout(()=> {
+      const s = document.getElementById('splash');
+      if(s) s.classList.add('splash-hide');
+      // remove after animation
+      setTimeout(()=>s && s.remove(), 800);
+    }, 900);
+  });
+</script>
 </body>
 </html>
