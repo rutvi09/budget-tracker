@@ -1,56 +1,28 @@
-// Advanced Budget Tracker - app.js
-// Features: many currencies, live conversion (exchangerate.host), charts, dark mode, localStorage, export
-
+// app.js - Advanced Budget Tracker with initial-page support
 /* ========== CONFIG ========== */
-// Which currencies to show in dropdown (option C - big list)
 const CURRENCIES = {
-  "USD":"$ - USD",
-  "INR":"₹ - INR",
-  "EUR":"€ - EUR",
-  "GBP":"£ - GBP",
-  "JPY":"¥ - JPY",
-  "AUD":"A$ - AUD",
-  "CAD":"C$ - CAD",
-  "CHF":"CHF - CHF",
-  "CNY":"¥ - CNY",
-  "HKD":"HK$ - HKD",
-  "SGD":"S$ - SGD",
-  "KRW":"₩ - KRW",
-  "AED":"د.إ - AED",
-  "ZAR":"R - ZAR",
-  "PHP":"₱ - PHP",
-  "MYR":"RM - MYR",
-  "THB":"฿ - THB",
-  "IDR":"Rp - IDR",
-  "MXN":"$ - MXN",
-  "BRL":"R$ - BRL",
-  "TRY":"₺ - TRY",
-  "SEK":"kr - SEK",
-  "NOK":"kr - NOK",
-  "DKK":"kr - DKK",
-  "PLN":"zł - PLN"
+  "USD":"$ - USD","INR":"₹ - INR","EUR":"€ - EUR","GBP":"£ - GBP","JPY":"¥ - JPY",
+  "AUD":"A$ - AUD","CAD":"C$ - CAD","CHF":"CHF - CHF","CNY":"¥ - CNY","HKD":"HK$ - HKD",
+  "SGD":"S$ - SGD","KRW":"₩ - KRW","AED":"د.إ - AED","ZAR":"R - ZAR","PHP":"₱ - PHP",
+  "MYR":"RM - MYR","THB":"฿ - THB","IDR":"Rp - IDR","MXN":"$ - MXN","BRL":"R$ - BRL",
+  "TRY":"₺ - TRY","SEK":"kr - SEK","NOK":"kr - NOK","DKK":"kr - DKK","PLN":"zł - PLN"
 };
-
-// exchangerate.host endpoint (no key required)
-// Docs: https://api.exchangerate.host/latest
 const RATES_API = "https://api.exchangerate.host/latest";
-
-/* ========== STATE ========== */
 let state = {
-  expenses: [], // {title, amount, currency, category, date, id}
-  rates: null, // rates object from API (rates and base)
+  expenses: [],
+  rates: null,
   ratesFetchedAt: 0,
   displayCurrency: "USD",
   theme: "light",
   goal: {amount:0, currency:null}
 };
 
-/* ========== UTIL ========== */
-const $ = (id)=>document.getElementById(id);
+/* ========== HELPERS ========== */
+const $ = id => document.getElementById(id);
 const now = ()=>Date.now();
 const saveState = ()=>localStorage.setItem("bt_state_v2", JSON.stringify({
-  expenses: state.expenses, theme: state.theme, displayCurrency: state.displayCurrency,
-  goal: state.goal, ratesFetchedAt: state.ratesFetchedAt, rates: state.rates
+  expenses: state.expenses, theme: state.theme, displayCurrency: state.displayCurrency, goal: state.goal,
+  rates: state.rates, ratesFetchedAt: state.ratesFetchedAt
 }));
 const loadState = ()=>{
   const raw = localStorage.getItem("bt_state_v2");
@@ -66,69 +38,64 @@ const loadState = ()=>{
   }catch(e){ console.warn("loadState err", e) }
 };
 
-/* ========== RATES / CONVERSION ========== */
-// Fetch rates from exchangerate.host and cache to localStorage
+// initial page may have saved initial choices
+function applyInitialSettingsIfAny(){
+  const initCurr = localStorage.getItem('bt_initial_displayCurrency');
+  const initTheme = localStorage.getItem('bt_initial_theme');
+  if(initCurr){ state.displayCurrency = initCurr; localStorage.removeItem('bt_initial_displayCurrency'); }
+  if(initTheme){ state.theme = initTheme; localStorage.removeItem('bt_initial_theme'); }
+}
+
+/* ========== RATES ========== */
 async function fetchRates(force=false){
-  // If we have cached rates fetched within 12 hours, reuse
-  const TTL = 1000 * 60 * 60 * 12; // 12 hours
-  if(state.rates && (now() - state.ratesFetchedAt < TTL) && !force) return state.rates;
+  const TTL = 1000*60*60*12;
+  if(state.rates && (now()-state.ratesFetchedAt < TTL) && !force) return state.rates;
   try{
     const res = await fetch(RATES_API);
-    if(!res.ok) throw new Error("Rates fetch failed");
-    const data = await res.json(); // {base: "EUR", rates: {...}, date: "2025-..." }
+    if(!res.ok) throw new Error('Rates fetch failed');
+    const data = await res.json();
     state.rates = data;
     state.ratesFetchedAt = now();
     saveState();
     return data;
   }catch(err){
-    console.error("Could not fetch rates:", err);
-    // fall back to cached if available
+    console.error('fetchRates error', err);
     return state.rates;
   }
 }
 
-// Convert amount from currency 'from' to currency 'to'
-// Uses formula: amount * (rate[to] / rate[from])  where rates are relative to API base
 function convert(amount, from, to){
-  if(!state.rates || !state.rates.rates) return amount; // can't convert
+  if(!state.rates || !state.rates.rates) return amount;
   const rates = state.rates.rates;
   const base = state.rates.base || "EUR";
-  // If API includes the exact currency as base 1: handle
   if(from === to) return amount;
-  // If API base equals 'from', then target rate is rates[to]
   if(from === base){
     if(!rates[to]) return amount;
     return amount * rates[to];
   }
-  // If API base equals 'to'
   if(to === base){
     if(!rates[from]) return amount;
     return amount / rates[from];
   }
-  // General case: amount_in_base = amount / rates[from]; amount_in_to = amount_in_base * rates[to]
-  const rateFrom = rates[from];
-  const rateTo = rates[to];
+  const rateFrom = rates[from], rateTo = rates[to];
   if(!rateFrom || !rateTo) return amount;
   return (amount / rateFrom) * rateTo;
 }
 
-// Helper: format with symbol for a given currency code
 function symbolFor(code){
-  // Try to parse from CURRENCIES map
-  if(CURRENCIES[code]){
-    // e.g. "₹ - INR" -> get prefix before ' - '
-    return CURRENCIES[code].split(" - ")[0];
-  }
+  if(CURRENCIES[code]) return CURRENCIES[code].split(" - ")[0];
   return code + " ";
 }
+function numberWithCommas(x){ return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
 
 /* ========== UI INIT ========== */
 let barChart, pieChart;
 function populateCurrencyDropdowns(){
+  if(!$('currency-select')) return; // in case on index.html
   const displaySel = $("currency-select");
   const inputSel = $("input-currency");
   const goalSel = $("goal-currency");
-  // empty
   [displaySel, inputSel, goalSel].forEach(s=>s.innerHTML="");
   Object.keys(CURRENCIES).forEach(code=>{
     const label = CURRENCIES[code];
@@ -137,13 +104,13 @@ function populateCurrencyDropdowns(){
     inputSel.insertAdjacentHTML("beforeend", opt);
     goalSel.insertAdjacentHTML("beforeend", opt);
   });
-  // set defaults
   displaySel.value = state.displayCurrency || "USD";
   inputSel.value = state.displayCurrency || "USD";
   goalSel.value = state.goal.currency || (state.displayCurrency || "USD");
 }
 
 function initCharts(){
+  if(!document.getElementById('barChart')) return;
   const barCtx = document.getElementById("barChart").getContext("2d");
   const pieCtx = document.getElementById("pieChart").getContext("2d");
   barChart = new Chart(barCtx, {
@@ -164,13 +131,13 @@ function initCharts(){
 
 /* ========== RENDER ========== */
 function renderExpenses(){
+  if(!$('expense-list')) return;
   const list = $("expense-list");
   list.innerHTML = "";
   const displayCode = $("currency-select").value || state.displayCurrency || "USD";
-  let totals = {}; // totals by category (in display currency)
+  let totals = {};
   let totalSpent = 0;
   state.expenses.forEach((e)=>{
-    // e.amount is stored in e.currency
     const converted = (state.rates ? convert(Number(e.amount), e.currency, displayCode) : Number(e.amount));
     totalSpent += converted;
     totals[e.category] = (totals[e.category] || 0) + converted;
@@ -195,10 +162,8 @@ function renderExpenses(){
 
   $("total-spent").innerText = `${symbolFor(displayCode)}${numberWithCommas(totalSpent.toFixed(2))}`;
 
-  // goal calc
   const goal = state.goal;
   if(goal && goal.amount && goal.currency){
-    // convert goal to display currency for comparison
     const goalInDisplay = state.rates ? convert(Number(goal.amount), goal.currency, displayCode) : Number(goal.amount);
     const remaining = goalInDisplay - totalSpent;
     if(remaining > 0){
@@ -213,21 +178,20 @@ function renderExpenses(){
     $("goal-status").innerText = "";
   }
 
-  // Update charts
+  // charts
   const labels = Object.keys(totals);
   const data = labels.map(l=>totals[l]);
-  barChart.data.labels = labels;
-  barChart.data.datasets[0].data = data;
-  pieChart.data.labels = labels;
-  pieChart.data.datasets[0].data = data;
-  barChart.update();
-  pieChart.update();
+  if(barChart && pieChart){
+    barChart.data.labels = labels;
+    barChart.data.datasets[0].data = data;
+    pieChart.data.labels = labels;
+    pieChart.data.datasets[0].data = data;
+    barChart.update();
+    pieChart.update();
+  }
 
   saveState();
 }
-
-function numberWithCommas(x){ return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
 
 /* ========== CRUD ========== */
 function addExpenseObj(e){
@@ -235,7 +199,6 @@ function addExpenseObj(e){
   saveState();
   renderExpenses();
 }
-
 function deleteExpense(id){
   state.expenses = state.expenses.filter(x=>x.id !== id);
   saveState();
@@ -244,71 +207,53 @@ function deleteExpense(id){
 
 /* ========== EVENTS ========== */
 function setupEventListeners(){
-  // forms
-  $("expense-form").addEventListener("submit", (ev)=>{
-    ev.preventDefault();
-    const title = $("expense-title").value.trim();
-    const amount = parseFloat($("expense-amount").value);
-    const inputCurrency = $("input-currency").value;
-    const category = $("expense-category").value;
-    const date = $("expense-date").value;
-    if(!title || !amount || isNaN(amount)){
-      alert("Enter valid title and amount");
-      return;
-    }
-    const id = cryptoRandomId();
-    addExpenseObj({id, title, amount:Number(amount), currency: inputCurrency, category, date});
-    $("expense-title").value=""; $("expense-amount").value=""; $("expense-date").value="";
+  if($('expense-form')){
+    $('expense-form').addEventListener('submit', (ev)=>{
+      ev.preventDefault();
+      const title = $('expense-title').value.trim();
+      const amount = parseFloat($('expense-amount').value);
+      const inputCurrency = $('input-currency').value;
+      const category = $('expense-category').value;
+      const date = $('expense-date').value;
+      if(!title || !amount || isNaN(amount)){ alert('Enter valid title and amount'); return; }
+      const id = cryptoRandomId();
+      addExpenseObj({id, title, amount:Number(amount), currency: inputCurrency, category, date});
+      $('expense-title').value=''; $('expense-amount').value=''; $('expense-date').value='';
+    });
+  }
+
+  if($('clear-all')) $('clear-all').addEventListener('click', ()=>{
+    if(!confirm('Clear all expenses?')) return;
+    state.expenses = []; saveState(); renderExpenses();
   });
 
-  $("clear-all").addEventListener("click", ()=>{
-    if(!confirm("Clear all expenses?")) return;
-    state.expenses = [];
-    saveState();
-    renderExpenses();
+  if($('set-goal')) $('set-goal').addEventListener('click', ()=>{
+    const g = parseFloat($('goal-amount-input').value);
+    const gc = $('goal-currency').value;
+    if(isNaN(g) || g<=0){ alert('Enter valid goal'); return; }
+    state.goal = {amount: g, currency: gc}; $('goal-amount-input').value=''; saveState(); renderExpenses();
+  });
+  if($('clear-goal')) $('clear-goal').addEventListener('click', ()=>{ state.goal = {amount:0,currency:null}; saveState(); renderExpenses(); });
+
+  if($('currency-select')) $('currency-select').addEventListener('change', async ()=>{
+    state.displayCurrency = $('currency-select').value; saveState();
+    await fetchRates(); renderExpenses();
   });
 
-  $("set-goal").addEventListener("click", ()=>{
-    const g = parseFloat($("goal-amount-input").value);
-    const gc = $("goal-currency").value;
-    if(isNaN(g) || g<=0){ alert("Enter valid goal"); return; }
-    state.goal = {amount: g, currency: gc};
-    $("goal-amount-input").value="";
-    saveState();
-    renderExpenses();
+  if($('theme-toggle')) $('theme-toggle').addEventListener('click', ()=>{
+    state.theme = (state.theme === 'dark') ? 'light' : 'dark';
+    applyTheme(); saveState();
   });
 
-  $("clear-goal").addEventListener("click", ()=>{
-    state.goal = {amount:0, currency:null};
-    saveState(); renderExpenses();
-  });
-
-  // currency display change
-  $("currency-select").addEventListener("change", async ()=>{
-    state.displayCurrency = $("currency-select").value;
-    saveState();
-    // ensure rates are present
-    await fetchRates();
-    renderExpenses();
-  });
-
-  // theme toggle
-  $("theme-toggle").addEventListener("click", ()=>{
-    state.theme = (state.theme === "dark") ? "light" : "dark";
-    applyTheme();
-    saveState();
-  });
-
-  // Export
-  $("download-pdf").addEventListener("click", ()=>downloadPDF());
-  $("download-img").addEventListener("click", ()=>downloadImage());
+  if($('download-pdf')) $('download-pdf').addEventListener('click', ()=>downloadPDF());
+  if($('download-img')) $('download-img').addEventListener('click', ()=>downloadImage());
 }
 
-/* ========== EXPORT ========== */
+/* ========== EXPORTS ========== */
 function downloadPDF(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p','pt','a4');
-  html2canvas(document.querySelector(".app")).then(canvas=>{
+  html2canvas(document.querySelector('.app')).then(canvas=>{
     const imgData = canvas.toDataURL('image/png');
     const imgWidth = 595;
     const imgHeight = canvas.height * imgWidth / canvas.width;
@@ -316,45 +261,31 @@ function downloadPDF(){
     doc.save('budget-tracker.pdf');
   });
 }
-
 function downloadImage(){
-  html2canvas(document.querySelector(".app")).then(canvas=>{
-    const link = document.createElement("a");
-    link.download = 'budget-tracker.png';
-    link.href = canvas.toDataURL();
-    link.click();
+  html2canvas(document.querySelector('.app')).then(canvas=>{
+    const link = document.createElement('a'); link.download='budget-tracker.png'; link.href=canvas.toDataURL(); link.click();
   });
 }
 
 /* ========== THEME ========== */
 function applyTheme(){
-  if(state.theme === "dark"){
-    document.body.classList.add("dark");
-    $("theme-toggle").innerText = "☀️";
-  } else {
-    document.body.classList.remove("dark");
-    $("theme-toggle").innerText = "🌙";
-  }
+  if(state.theme === 'dark'){ document.body.classList.add('dark'); if($('theme-toggle')) $('theme-toggle').innerText='☀️'; }
+  else { document.body.classList.remove('dark'); if($('theme-toggle')) $('theme-toggle').innerText='🌙'; }
 }
 
-/* ========== UTIL HELPERS ========== */
+/* ========== UTIL ========== */
 function cryptoRandomId(){ return 'id_'+Math.random().toString(36).slice(2,9); }
 
 /* ========== BOOTSTRAP ========== */
 (async function bootstrap(){
   loadState();
+  applyInitialSettingsIfAny();
   populateCurrencyDropdowns();
   initCharts();
   setupEventListeners();
   applyTheme();
 
-  // Ensure we have rates (fetch, but don't block UI)
+  // fetch rates in background
   await fetchRates();
-
-  // If user had saved displayCurrency, set selects accordingly
-  if(state.displayCurrency) $("currency-select").value = state.displayCurrency;
-  if(state.goal && state.goal.currency) $("goal-currency").value = state.goal.currency;
-
-  // Render saved expenses
   renderExpenses();
 })();
