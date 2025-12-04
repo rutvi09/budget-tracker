@@ -1,8 +1,6 @@
-/* app.js - Budget Buddy (Peach+Mint Theme)
-   Features: many currencies, live conversion (exchangerate.host), charts, dark mode, localStorage, export
-*/
+/* app.js - Budget Buddy (Peach+Mint Theme) */
 
-/* ========== CONFIG ========== */
+// CONFIG
 const CURRENCIES = {
   "USD":"$ - USD","INR":"₹ - INR","EUR":"€ - EUR","GBP":"£ - GBP","JPY":"¥ - JPY",
   "AUD":"A$ - AUD","CAD":"C$ - CAD","CHF":"CHF - CHF","CNY":"¥ - CNY","HKD":"HK$ - HKD",
@@ -20,7 +18,7 @@ let state = {
   goal: {amount:0, currency:null}
 };
 
-/* ========== HELPERS ========== */
+// HELPERS
 const $ = id => document.getElementById(id);
 const now = ()=>Date.now();
 const saveState = ()=>localStorage.setItem("bt_state_v2", JSON.stringify({
@@ -41,7 +39,7 @@ const loadState = ()=>{
   }catch(e){ console.warn("loadState err", e) }
 };
 
-// initial page may have saved initial choices
+// apply initial settings from intro page
 function applyInitialSettingsIfAny(){
   const initCurr = localStorage.getItem('bt_initial_displayCurrency');
   const initTheme = localStorage.getItem('bt_initial_theme');
@@ -49,7 +47,7 @@ function applyInitialSettingsIfAny(){
   if(initTheme){ state.theme = initTheme; localStorage.removeItem('bt_initial_theme'); }
 }
 
-/* ========== RATES ========== */
+// RATES
 async function fetchRates(force=false){
   const TTL = 1000*60*60*12;
   if(state.rates && (now()-state.ratesFetchedAt < TTL) && !force) return state.rates;
@@ -92,7 +90,20 @@ function symbolFor(code){
 function numberWithCommas(x){ return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
 
-/* ========== UI INIT ========== */
+// DATE formatting - chosen style C: "December 04, 2025"
+function formatDateToLong(isoDate){
+  if(!isoDate) return "";
+  // isoDate expected "YYYY-MM-DD"
+  const d = new Date(isoDate + "T00:00:00");
+  if(isNaN(d)) return isoDate;
+  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const day = String(d.getDate()).padStart(2,'0');
+  const month = monthNames[d.getMonth()];
+  const year = d.getFullYear();
+  return `${month} ${day}, ${year}`;
+}
+
+// UI INIT
 let barChart, pieChart;
 function populateCurrencyDropdowns(){
   if(!$('currency-select')) return;
@@ -132,7 +143,7 @@ function initCharts(){
   });
 }
 
-/* ========== RENDER ========== */
+// render
 function renderExpenses(){
   if(!$('expense-list')) return;
   const list = $("expense-list");
@@ -145,13 +156,15 @@ function renderExpenses(){
     totalSpent += converted;
     totals[e.category] = (totals[e.category] || 0) + converted;
 
+    const dateText = e.date ? formatDateToLong(e.date) : "";
+
     const li = document.createElement("li");
     li.className = "expense-item";
     li.innerHTML = `
       <div class="expense-meta">
         <div>
           <div style="font-weight:600">${escapeHtml(e.title)}</div>
-          <div class="muted" style="font-size:0.85rem">${e.date || ""} • ${e.currency}</div>
+          <div class="muted" style="font-size:0.85rem">${dateText} • ${e.currency}</div>
         </div>
       </div>
       <div style="display:flex;gap:12px;align-items:center">
@@ -196,7 +209,7 @@ function renderExpenses(){
   saveState();
 }
 
-/* ========== CRUD ========== */
+// CRUD
 function addExpenseObj(e){
   state.expenses.unshift(e);
   saveState();
@@ -208,8 +221,14 @@ function deleteExpense(id){
   renderExpenses();
 }
 
-/* ========== EVENTS ========== */
+// events & default date
 function setupEventListeners(){
+  // default date = today for the input
+  if($('expense-date')){
+    const today = new Date().toISOString().slice(0,10);
+    $('expense-date').value = today;
+  }
+
   if($('expense-form')){
     $('expense-form').addEventListener('submit', (ev)=>{
       ev.preventDefault();
@@ -217,11 +236,11 @@ function setupEventListeners(){
       const amount = parseFloat($('expense-amount').value);
       const inputCurrency = $('input-currency').value;
       const category = $('expense-category').value;
-      const date = $('expense-date').value;
+      const date = $('expense-date').value; // ISO
       if(!title || !amount || isNaN(amount)){ alert('Enter valid title and amount'); return; }
       const id = cryptoRandomId();
       addExpenseObj({id, title, amount:Number(amount), currency: inputCurrency, category, date});
-      $('expense-title').value=''; $('expense-amount').value=''; $('expense-date').value='';
+      $('expense-title').value=''; $('expense-amount').value=''; $('expense-date').value = new Date().toISOString().slice(0,10);
     });
   }
 
@@ -252,7 +271,7 @@ function setupEventListeners(){
   if($('download-img')) $('download-img').addEventListener('click', ()=>downloadImage());
 }
 
-/* ========== EXPORTS ========== */
+// exports
 function downloadPDF(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p','pt','a4');
@@ -270,25 +289,24 @@ function downloadImage(){
   });
 }
 
-/* ========== THEME ========== */
+// theme
 function applyTheme(){
   if(state.theme === 'dark'){ document.body.classList.add('dark'); if($('theme-toggle')) $('theme-toggle').innerText='☀️'; }
   else { document.body.classList.remove('dark'); if($('theme-toggle')) $('theme-toggle').innerText='🌙'; }
 }
 
-/* ========== UTIL ========== */
+// helpers
 function cryptoRandomId(){ return 'id_'+Math.random().toString(36).slice(2,9); }
 
-/* ========== BOOTSTRAP ========== */
+// BOOTSTRAP
 (async function bootstrap(){
   loadState();
   applyInitialSettingsIfAny();
 
-  // If initial display currency was saved by intro page, use it as starting value
+  // initial choices from intro page if present
   const initialDisplay = localStorage.getItem('bt_initial_displayCurrency');
   if(initialDisplay){ state.displayCurrency = initialDisplay; localStorage.removeItem('bt_initial_displayCurrency'); }
 
-  // If initial theme chosen at intro page, apply
   const initTheme = localStorage.getItem('bt_initial_theme');
   if(initTheme){ state.theme = initTheme; localStorage.removeItem('bt_initial_theme'); }
 
