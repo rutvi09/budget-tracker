@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Advanced Budget Tracker</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <h1>💼 Advanced Budget Tracker</h1>
+
+      <div class="top-controls">
+        <div class="control currency-control">
+          <label for="currency-select">Display Currency</label>
+          <select id="currency-select" title="Select display currency"></select>
+        </div>
+
+        <div class="control spacer-control"></div>
+
+        <div class="control mode-control">
+          <label for="theme-toggle">Theme</label>
+          <button id="theme-toggle" class="btn small">🌙</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-grid">
+      <section class="card form-card">
+        <h2>➕ Add Expense</h2>
+        <form id="expense-form" class="form">
+          <input id="expense-title" placeholder="Title (e.g., Pizza)" required />
+          <div class="row">
+            <input id="expense-amount" type="number" step="0.01" placeholder="Amount" required />
+            <select id="input-currency" title="Currency for this amount"></select>
+          </div>
+          <div class="row">
+            <select id="expense-category">
+              <option value="Food">🍔 Food</option>
+              <option value="Shopping">🛍️ Shopping</option>
+              <option value="Travel">✈️ Travel</option>
+              <option value="Bills">💡 Bills</option>
+              <option value="Entertainment">🎮 Entertainment</option>
+              <option value="Other">📦 Other</option>
+            </select>
+            <input id="expense-date" type="date" />
+          </div>
+          <div class="row actions">
+            <button type="submit" class="btn primary">Add</button>
+            <button type="button" id="clear-all" class="btn warn">Clear All</button>
+          </div>
+        </form>
+
+        <hr />
+
+        <h3>🎯 Savings Goal</h3>
+        <div class="goal">
+          <div class="row">
+            <input id="goal-amount-input" type="number" step="0.01" placeholder="Goal amount" />
+            <select id="goal-currency" title="Goal currency"></select>
+          </div>
+          <div class="row actions">
+            <button id="set-goal" class="btn">Set Goal</button>
+            <button id="clear-goal" class="btn">Clear Goal</button>
+          </div>
+          <p id="goal-status" class="muted"></p>
+        </div>
+      </section>
+
+      <section class="card summary-card">
+        <div class="summary-top">
+          <div class="summary-item">
+            <div class="label">Total Spent</div>
+            <div id="total-spent" class="value">0</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">Remaining / Goal</div>
+            <div id="remaining-goal" class="value muted">—</div>
+          </div>
+        </div>
+
+        <div class="charts">
+          <canvas id="barChart" height="200"></canvas>
+          <canvas id="pieChart" height="200" style="margin-top:12px;"></canvas>
+        </div>
+
+        <div class="export-row" style="margin-top:12px;">
+          <button id="download-pdf" class="btn">Download PDF</button>
+          <button id="download-img" class="btn">Download Image</button>
+        </div>
+      </section>
+
+      <section class="card list-card">
+        <h2>🧾 Expenses</h2>
+        <ul id="expense-list" class="expense-list"></ul>
+      </section>
+    </main>
+
+    <footer class="footer muted">
+      Rates provided by exchangerate.host — cached in your browser.
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
