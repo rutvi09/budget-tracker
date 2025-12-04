@@ -1,5 +1,4 @@
 :root{
-  /* Peach + Mint pastel palette */
   --bg:#FFF7F3;
   --card-bg:#ffffff;
   --text:#2b2b2b;
@@ -39,8 +38,7 @@ body{
 .intro-card{width:100%;padding:22px;border-radius:16px;box-shadow:var(--shadow);background:linear-gradient(180deg,#fff,#fff0f6)}
 .intro-top{display:flex;flex-direction:column;align-items:center;gap:6px}
 .mascot-large{font-size:48px}
-h1{margin:0;font-size:1.6rem;color:var(--text)}
-.tagline{margin:0;font-weight:600;color:var(--muted);font-size:1rem}
+.hook-line{margin:8px 0 0 0;font-size:1.5rem;line-height:1.15;color:var(--text);font-weight:800}
 .lead{color:var(--muted);margin-top:8px}
 
 /* Buttons & selects */
