@@ -1,4 +1,7 @@
-// app.js - Advanced Budget Tracker with initial-page support
+/* app.js - Budget Buddy (Peach+Mint Theme)
+   Features: many currencies, live conversion (exchangerate.host), charts, dark mode, localStorage, export
+*/
+
 /* ========== CONFIG ========== */
 const CURRENCIES = {
   "USD":"$ - USD","INR":"₹ - INR","EUR":"€ - EUR","GBP":"£ - GBP","JPY":"¥ - JPY",
@@ -92,7 +95,7 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','
 /* ========== UI INIT ========== */
 let barChart, pieChart;
 function populateCurrencyDropdowns(){
-  if(!$('currency-select')) return; // in case on index.html
+  if(!$('currency-select')) return;
   const displaySel = $("currency-select");
   const inputSel = $("input-currency");
   const goalSel = $("goal-currency");
@@ -258,12 +261,12 @@ function downloadPDF(){
     const imgWidth = 595;
     const imgHeight = canvas.height * imgWidth / canvas.width;
     doc.addImage(imgData,'PNG',0,0,imgWidth,imgHeight);
-    doc.save('budget-tracker.pdf');
+    doc.save('budget-buddy.pdf');
   });
 }
 function downloadImage(){
   html2canvas(document.querySelector('.app')).then(canvas=>{
-    const link = document.createElement('a'); link.download='budget-tracker.png'; link.href=canvas.toDataURL(); link.click();
+    const link = document.createElement('a'); link.download='budget-buddy.png'; link.href=canvas.toDataURL(); link.click();
   });
 }
 
@@ -280,12 +283,20 @@ function cryptoRandomId(){ return 'id_'+Math.random().toString(36).slice(2,9); }
 (async function bootstrap(){
   loadState();
   applyInitialSettingsIfAny();
+
+  // If initial display currency was saved by intro page, use it as starting value
+  const initialDisplay = localStorage.getItem('bt_initial_displayCurrency');
+  if(initialDisplay){ state.displayCurrency = initialDisplay; localStorage.removeItem('bt_initial_displayCurrency'); }
+
+  // If initial theme chosen at intro page, apply
+  const initTheme = localStorage.getItem('bt_initial_theme');
+  if(initTheme){ state.theme = initTheme; localStorage.removeItem('bt_initial_theme'); }
+
   populateCurrencyDropdowns();
   initCharts();
   setupEventListeners();
   applyTheme();
 
-  // fetch rates in background
   await fetchRates();
   renderExpenses();
 })();
