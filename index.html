@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Budget Buddy — Welcome</title>
+  <title>Welcome — Budget Buddy</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Splash -->
+  <!-- Splash (short) -->
   <div id="splash" class="splash">
     <div class="splash-inner">
       <div class="mascot">🐷</div>
@@ -17,18 +17,21 @@
 
   <main class="intro-wrap">
     <div class="intro-card card">
-      <div class="intro-top" style="text-align:center">
+      <div class="intro-top">
         <div class="mascot-large">🐷</div>
-        <h1 class="hook-line">Track Your Money. Control Your Future.</h1>
+        <h1>Budget Buddy</h1>
+        <p class="tagline">Track. Save. Smile.</p>
       </div>
 
-      <div class="form-row" style="margin-top:18px">
+      <p class="lead">Start your money-smart journey. Choose your preferred display currency and theme below — you can change these anytime inside the app.</p>
+
+      <div class="form-row">
         <label for="initial-currency">Choose display currency</label>
         <select id="initial-currency" class="select"></select>
       </div>
 
-      <div class="form-row" style="margin-top:8px">
-        <label>Theme</label>
+      <div class="form-row">
+        <label>Choose theme</label>
         <div class="theme-choices">
           <button id="theme-light" class="btn small">Light 🌞</button>
           <button id="theme-dark" class="btn small">Dark 🌙</button>
@@ -37,18 +40,23 @@
 
       <div style="height:12px;"></div>
       <div class="form-row">
-        <button id="start-app" class="btn primary large">Start Tracking</button>
+        <button id="start-app" class="btn primary large">Start Budget Tracker</button>
       </div>
+
+      <p class="muted small" style="margin-top:12px;">You can change currency, theme, and other preferences inside the app later.</p>
     </div>
 
     <footer class="footer muted">Made with 💖 • Peach + Mint Theme</footer>
   </main>
 
 <script>
+  // Currency list (pastel-friendly)
   const CURRENCIES = {
     "USD":"$ - USD","INR":"₹ - INR","EUR":"€ - EUR","GBP":"£ - GBP","JPY":"¥ - JPY",
     "AUD":"A$ - AUD","CAD":"C$ - CAD","CHF":"CHF - CHF","CNY":"¥ - CNY","HKD":"HK$ - HKD",
-    "SGD":"S$ - SGD","KRW":"₩ - KRW","AED":"د.إ - AED","ZAR":"R - ZAR","PHP":"₱ - PHP"
+    "SGD":"S$ - SGD","KRW":"₩ - KRW","AED":"د.إ - AED","ZAR":"R - ZAR","PHP":"₱ - PHP",
+    "MYR":"RM - MYR","THB":"฿ - THB","IDR":"Rp - IDR","MXN":"$ - MXN","BRL":"R$ - BRL",
+    "TRY":"₺ - TRY","SEK":"kr - SEK","NOK":"kr - NOK","DKK":"kr - DKK","PLN":"zł - PLN"
   };
 
   const sel = document.getElementById('initial-currency');
@@ -59,7 +67,7 @@
     sel.appendChild(opt);
   });
 
-  // preload saved state
+  // Use saved state if exists
   const savedState = localStorage.getItem('bt_state_v2');
   if(savedState){
     try {
@@ -70,11 +78,13 @@
 
   document.getElementById('theme-light').addEventListener('click', ()=>{
     localStorage.setItem('bt_initial_theme','light');
-    document.body.classList.remove('dark'); highlightThemeButton();
+    document.body.classList.remove('dark');
+    highlightThemeButton();
   });
   document.getElementById('theme-dark').addEventListener('click', ()=>{
     localStorage.setItem('bt_initial_theme','dark');
-    document.body.classList.add('dark'); highlightThemeButton();
+    document.body.classList.add('dark');
+    highlightThemeButton();
   });
 
   function highlightThemeButton(){
@@ -89,17 +99,18 @@
     localStorage.setItem('bt_initial_displayCurrency', currency);
     const t = localStorage.getItem('bt_initial_theme') || 'light';
     localStorage.setItem('bt_initial_theme', t);
-    // small delay for smooth UX
-    setTimeout(()=>{ window.location.href = 'tracker.html'; }, 150);
+    // small delay for nicer UX
+    setTimeout(()=>{ window.location.href = 'tracker.html'; }, 160);
   });
 
-  // splash hide
+  // splash hide after short delay
   window.addEventListener('load', ()=>{
     setTimeout(()=> {
       const s = document.getElementById('splash');
       if(s) s.classList.add('splash-hide');
-      setTimeout(()=> s && s.remove(), 700);
-    }, 800);
+      // remove after animation
+      setTimeout(()=>s && s.remove(), 800);
+    }, 900);
   });
 </script>
 </body>
