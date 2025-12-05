@@ -3,69 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expense Tracker</title>
+  <title>Tracker</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="container">
-    <h1 class="app-title">Expense Tracker</h1>
+<h2>Expense Tracker</h2>
 
-    <!-- Add Expense -->
-    <h2>Add Expense</h2>
-    <select id="category">
-      <option value="Food">Food</option>
-      <option value="Shopping">Shopping</option>
-      <option value="Travel">Travel</option>
-      <option value="Others">Others</option>
-    </select>
-    <input type="number" id="amount" placeholder="Amount">
-    <select id="currency">
-      <option value="INR">INR ₹</option>
-      <option value="USD">USD $</option>
-      <option value="EUR">EUR €</option>
-      <option value="GBP">GBP £</option>
-    </select>
-    <button onclick="addExpense()" class="btn primary">Add</button>
+<div class="input-section">
+  <input type="number" id="expense-amount" placeholder="Amount">
+  <input type="text" id="expense-desc" placeholder="Item name">
+  <select id="expense-currency">
+    <option>USD</option><option>INR</option><option>EUR</option><option>JPY</option>
+  </select>
+  <button id="add-expense">Add</button>
+</div>
 
-    <!-- Goal -->
-    <h2>Goal</h2>
-    <input type="number" id="goal-amount" placeholder="Enter your goal">
-    <select id="goal-currency">
-      <option value="INR">INR ₹</option>
-      <option value="USD">USD $</option>
-      <option value="EUR">EUR €</option>
-      <option value="GBP">GBP £</option>
-    </select>
-    <button onclick="setGoal()" id="set-goal" class="btn success">Set Goal</button>
-    <button onclick="resetGoal()" id="reset-goal" class="btn danger" style="display:none;">Reset Goal</button>
+<div class="goal-section">
+  <input type="number" id="goal-amount" placeholder="Goal Amount">
+  <select id="goal-currency">
+    <option>USD</option><option>INR</option><option>EUR</option><option>JPY</option>
+  </select>
+  <button id="set-goal">Set Goal</button>
+  <p><strong>Remaining:</strong> <span id="remaining-goal">—</span></p>
+  <p id="goal-status"></p>
+</div>
 
-    <p>Remaining: <span id="remaining-goal">—</span></p>
-    <p id="goal-status"></p>
+<h3>Total Spent: <span id="total-spent">0</span></h3>
+<canvas id="expense-chart"></canvas>
 
-    <!-- Display Currency -->
-    <h2>Display Currency</h2>
-    <select id="currency-select" onchange="changeDisplayCurrency()">
-      <option value="INR">INR ₹</option>
-      <option value="USD">USD $</option>
-      <option value="EUR">EUR €</option>
-      <option value="GBP">GBP £</option>
-    </select>
+<ul id="expense-list"></ul>
 
-    <!-- Expenses Display -->
-    <div class="expense-output">
-      <h2>Total Spent: <span id="total-spent">₹0.00</span></h2>
-      <h2>Expenses</h2>
-      <ul id="expense-list"></ul>
-    </div>
+<div class="controls">
+  <button id="export-pdf">Export PDF</button>
+  <button id="clear-all">Clear List</button>
+</div>
 
-    <h2>Expense Chart</h2>
-    <canvas id="expense-chart"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="app.js"></script>
 
-    <button onclick="exportAsPDF()" class="btn primary">Export PDF</button>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="app.js"></script>
 </body>
 </html>
