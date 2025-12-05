@@ -8,39 +8,36 @@
 </head>
 <body>
 
-<h2>Expense Tracker</h2>
+<h2>Daily Expense Tracker</h2>
 
-<div class="input-section">
-  <input type="number" id="expense-amount" placeholder="Amount">
-  <input type="text" id="expense-desc" placeholder="Item name">
-  <select id="expense-currency">
-    <option>USD</option><option>INR</option><option>EUR</option><option>JPY</option>
-  </select>
-  <button id="add-expense">Add</button>
+<div class="input-area">
+  <input type="number" id="amount" placeholder="Amount">
+  <input type="text" id="desc" placeholder="Item name">
+  <select id="currency"></select>
+  <button id="add">Add Expense</button>
 </div>
 
-<div class="goal-section">
-  <input type="number" id="goal-amount" placeholder="Goal Amount">
-  <select id="goal-currency">
-    <option>USD</option><option>INR</option><option>EUR</option><option>JPY</option>
-  </select>
+<div class="goal-box">
+  <input type="number" id="goal" placeholder="Goal amount">
+  <select id="goal-cur"></select>
   <button id="set-goal">Set Goal</button>
-  <p><strong>Remaining:</strong> <span id="remaining-goal">—</span></p>
-  <p id="goal-status"></p>
+
+  <p>Remaining: <span id="remaining">—</span></p>
+  <p id="goal-msg"></p>
 </div>
 
-<h3>Total Spent: <span id="total-spent">0</span></h3>
-<canvas id="expense-chart"></canvas>
+<h3>Total: <span id="total">0</span></h3>
+<canvas id="chart"></canvas>
 
-<ul id="expense-list"></ul>
+<ul id="list"></ul>
 
-<div class="controls">
-  <button id="export-pdf">Export PDF</button>
-  <button id="clear-all">Clear List</button>
+<div class="btn-group">
+  <button id="clear">Clear All</button>
 </div>
+
+<audio id="alert-sound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3"></audio>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="app.js"></script>
-
 </body>
 </html>
