@@ -1,77 +1,37 @@
-:root {
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --success: #10b981;
-  --danger: #d06767;
-  --background: #1a1a1a;
-  --card: #262626;
-  --text: #f0f0f0;
+* { margin: 0; padding: 0; font-family: Arial; }
+body { background: #f5f5f5; padding: 20px; text-align: center; }
+
+header { margin-top: 80px; }
+.tagline { margin: 15px 0; font-size: 18px; color: #333; }
+
+.start-btn {
+  display: inline-block; padding: 12px 25px; background: black;
+  color: white; border-radius: 7px; text-decoration: none;
+  font-size: 18px; margin-top: 15px;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background: var(--background);
-  color: var(--text);
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
+h2 { margin-bottom: 10px; }
+
+.input-section, .goal-section {
+  background: white; padding: 15px; margin: 15px auto;
+  border-radius: 10px; width: 90%; max-width: 500px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 
-.container {
-  width: 90%;
-  max-width: 500px;
-  margin: 20px auto;
-  background: var(--card);
-  padding: 20px;
-  border-radius: 15px;
-  text-align: center;
+input, select, button {
+  padding: 8px; margin: 5px; border-radius: 6px;
+  border: 1px solid #777;
 }
 
-/* Buttons */
-.btn {
-  padding: 12px;
-  width: 100%;
-  border-radius: 10px;
-  border: none;
-  font-size: 16px;
-  margin-top: 10px;
-}
+button { cursor: pointer; background: black; color: white; }
 
-.btn.primary {
-  background: var(--primary);
-  color: white;
-}
+#goal-status { font-weight: bold; margin-top: 5px; }
 
-.btn.primary:hover {
-  background: var(--primary-hover);
-}
+#expense-list li { background: white; margin: 8px auto; width: 80%;
+  padding: 8px; border-radius: 6px; list-style: none; }
 
-.btn.success { background: var(--success); color: white; }
-.btn.danger { background: var(--danger); color: white; }
+canvas { margin-top: 20px; width: 95% !important; max-width: 500px; }
 
-/* Inputs */
-input, select {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0;
-  border-radius: 10px;
-  border: none;
-}
-
-/* Expense List */
-ul { padding: 0; }
-li {
-  background: #333;
-  margin: 6px 0;
-  padding: 10px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-}
-
-footer {
-  text-align: center;
-  color: #aaa;
-  padding: 10px;
+@media (max-width: 480px) {
+  input, select, button { width: 95%; }
 }
