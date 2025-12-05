@@ -1,86 +1,111 @@
 const $ = id => document.getElementById(id);
 
-// State
-let expenses = [];
-let goal = { amount: 0, currency: "USD" };
+let expenses = JSON.parse(localStorage.getItem("exp") || "[]");
+let goal = JSON.parse(localStorage.getItem("goal") || '{"amount":0,"currency":"USD"}');
+let rates = {};
 
-// Add expense
-$("add-expense").addEventListener("click", () => {
-  const amt = parseFloat($("expense-amount").value);
-  const desc = $("expense-desc").value;
-  const cur = $("expense-currency").value;
-
-  if (!amt || !desc) return;
-
-  expenses.push({ amount: amt, desc, currency: cur });
-  $("expense-amount").value = "";
-  $("expense-desc").value = "";
-
-  renderUI();
-});
-
-// Set goal
-$("set-goal").addEventListener("click", () => {
-  goal.amount = parseFloat($("goal-amount").value) || 0;
-  goal.currency = $("goal-currency").value;
-  renderUI();
-});
-
-// Conversion simplified as 1:1 (You can add real API later)
-const convert = amt => amt;
-
-// UI Update
-function renderUI() {
-  const total = expenses.reduce((t,e)=>t+convert(e.amount),0);
-  $("total-spent").textContent = total.toFixed(2);
-
-  let html="";
-  expenses.forEach(e => html += `<li>${e.desc} - ${e.amount} ${e.currency}</li>`);
-  $("expense-list").innerHTML = html;
-
-  updateGoalStatus(total);
-  drawChart();
+// Fetch Live Currency Rates (API)
+async function fetchRates() {
+  const res = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+  rates = await res.json();
+  fillCurrencies();
+  render();
 }
 
+// Fill dropdowns
+function fillCurrencies() {
+  const options = Object.keys(rates.rates)
+    .map(c => `<option ${c==="USD"?"selected":""}>${c}</option>`).join("");
+  $("currency").innerHTML = options;
+  $("goal-cur").innerHTML = options;
+}
+
+const convert = (amt, cur) => amt * (rates.rates[cur] || 1);
+
+// Add Expense
+$("add").onclick = () => {
+  const a = parseFloat($("amount").value);
+  const d = $("desc").value;
+  const c = $("currency").value;
+  if(!a || !d) return alert("Enter details!");
+
+  expenses.push({ amount:a, desc:d, currency:c });
+  localStorage.setItem("exp",JSON.stringify(expenses));
+  
+  $("amount").value = "";
+  $("desc").value = "";
+  render();
+};
+
+// Set Goal
+$("set-goal").onclick = () => {
+  goal.amount = parseFloat($("goal").value);
+  goal.currency = $("goal-cur").value;
+  localStorage.setItem("goal",JSON.stringify(goal));
+  render();
+};
+
 // Goal Alerts
-function updateGoalStatus(total){
-  const left = goal.amount - total;
-  if (goal.amount === 0) {
-    $("remaining-goal").textContent = "—";
-    $("goal-status").textContent = "";
+function checkGoal(total) {
+  if(goal.amount === 0) {
+    $("remaining").textContent="—";
+    $("goal-msg").textContent="";
     return;
   }
 
-  if (left > 0) {
-    $("remaining-goal").textContent = left.toFixed(2);
-    $("goal-status").textContent = "You're doing great! Keep saving! 😊";
-    $("goal-status").style.color = "green";
+  let goalUSD = convert(goal.amount, goal.currency);
+  let left = goalUSD - total;
+
+  if(left > 0) {
+    $("goal-msg").textContent="Great! Keep saving! 😊";
+    $("goal-msg").style.color="green";
+    $("remaining").textContent = left.toFixed(2);
   } else {
-    $("remaining-goal").textContent = "Goal Reached! 🎉";
-    $("goal-status").textContent = "Amazing! You achieved your goal! 🏆";
-    $("goal-status").style.color = "blue";
+    $("goal-msg").textContent="Goal Achieved! 🎉";
+    $("goal-msg").style.color="blue";
+    $("remaining").textContent = "0";
+    
+    // Sound + Vibration (Feature C)
+    $("alert-sound").play();
+    if(navigator.vibrate) navigator.vibrate([200,100,200]);
   }
 }
 
 // Chart
 let chart;
 function drawChart() {
-  const ctx = document.getElementById("expense-chart").getContext("2d");
+  const ctx = document.getElementById("chart").getContext("2d");
   if(chart) chart.destroy();
-  chart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: expenses.map(e=>e.desc),
-      datasets: [{
-        label: "Expenses",
-        data: expenses.map(e=>convert(e.amount)),
+  chart = new Chart(ctx,{
+    type:"bar",
+    data:{
+      labels:expenses.map(e=>e.desc),
+      datasets:[{
+        label:"Expenses (USD)",
+        data:expenses.map(e=>convert(e.amount, e.currency)),
       }]
     }
   });
 }
 
-// Export PDF + Clear
-$("export-pdf").addEventListener("click", ()=>alert("PDF feature coming soon!"));
-$("clear-all").addEventListener("click", ()=>{ expenses=[]; renderUI(); });
+// Render All
+function render() {
+  const total = expenses.reduce((t,e)=>t+convert(e.amount,e.currency),0);
+  $("total").textContent = total.toFixed(2);
 
-renderUI();
+  $("list").innerHTML = expenses.map(
+    e=>`<li>${e.desc} — ${e.amount} ${e.currency}</li>`
+  ).join("");
+
+  checkGoal(total);
+  drawChart();
+}
+
+// Clear All
+$("clear").onclick = ()=> {
+  expenses = [];
+  localStorage.removeItem("exp");
+  render();
+};
+
+fetchRates();
