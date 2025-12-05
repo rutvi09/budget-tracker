@@ -1,115 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Welcome — Budget Buddy</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker – Home</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Splash (short) -->
-  <div id="splash" class="splash">
-    <div class="splash-inner">
-      <div class="mascot">🤩</div>
-      <div class="splash-text">Budget Buddy</div>
+  <div class="container">
+    <h1 class="app-title">Smart Expense Tracker</h1>
+    <p class="sub-text">Track, Save & Achieve Your Goals 💪</p>
+
+    <div class="buttons">
+      <a href="tracker.html" class="btn primary">Open Tracker</a>
     </div>
   </div>
 
-  <main class="intro-wrap">
-    <div class="intro-card card">
-      <div class="intro-top">
-        <div class="mascot-large">🤩</div>
-        <h1>Budget Buddy</h1>
-        <p class="tagline">Track. Save. Smile.</p>
-      </div>
-
-      <p class="lead">Start your money-smart journey. Choose your preferred display currency and theme below — you can change these anytime inside the app.</p>
-
-      <div class="form-row">
-        <label for="initial-currency">Choose display currency</label>
-        <select id="initial-currency" class="select"></select>
-      </div>
-
-      <div class="form-row">
-        <label>Choose theme</label>
-        <div class="theme-choices">
-          <button id="theme-light" class="btn small">Light 🌞</button>
-          <button id="theme-dark" class="btn small">Dark 🌙</button>
-        </div>
-      </div>
-
-      <div style="height:12px;"></div>
-      <div class="form-row">
-        <button id="start-app" class="btn primary large">Start Budget Tracker</button>
-      </div>
-
-
-    <footer class="footer muted">&copy2025BudgetTracker</footer>
-  </main>
-
-<script>
-  // Currency list (pastel-friendly)
-  const CURRENCIES = {
-    "USD":"$ - USD","INR":"₹ - INR","EUR":"€ - EUR","GBP":"£ - GBP","JPY":"¥ - JPY",
-    "AUD":"A$ - AUD","CAD":"C$ - CAD","CHF":"CHF - CHF","CNY":"¥ - CNY","HKD":"HK$ - HKD",
-    "SGD":"S$ - SGD","KRW":"₩ - KRW","AED":"د.إ - AED","ZAR":"R - ZAR","PHP":"₱ - PHP",
-    "MYR":"RM - MYR","THB":"฿ - THB","IDR":"Rp - IDR","MXN":"$ - MXN","BRL":"R$ - BRL",
-    "TRY":"₺ - TRY","SEK":"kr - SEK","NOK":"kr - NOK","DKK":"kr - DKK","PLN":"zł - PLN"
-  };
-
-  const sel = document.getElementById('initial-currency');
-  Object.keys(CURRENCIES).forEach(code=>{
-    const opt = document.createElement('option');
-    opt.value = code;
-    opt.textContent = CURRENCIES[code];
-    sel.appendChild(opt);
-  });
-
-  // Use saved state if exists
-  const savedState = localStorage.getItem('bt_state_v2');
-  if(savedState){
-    try {
-      const st = JSON.parse(savedState);
-      if(st.displayCurrency) sel.value = st.displayCurrency;
-    } catch(e){}
-  }
-
-  document.getElementById('theme-light').addEventListener('click', ()=>{
-    localStorage.setItem('bt_initial_theme','light');
-    document.body.classList.remove('dark');
-    highlightThemeButton();
-  });
-  document.getElementById('theme-dark').addEventListener('click', ()=>{
-    localStorage.setItem('bt_initial_theme','dark');
-    document.body.classList.add('dark');
-    highlightThemeButton();
-  });
-
-  function highlightThemeButton(){
-    const t = localStorage.getItem('bt_initial_theme') || 'light';
-    document.getElementById('theme-light').classList.toggle('selected', t==='light');
-    document.getElementById('theme-dark').classList.toggle('selected', t==='dark');
-  }
-  highlightThemeButton();
-
-  document.getElementById('start-app').addEventListener('click', ()=>{
-    const currency = sel.value || 'USD';
-    localStorage.setItem('bt_initial_displayCurrency', currency);
-    const t = localStorage.getItem('bt_initial_theme') || 'light';
-    localStorage.setItem('bt_initial_theme', t);
-    // small delay for nicer UX
-    setTimeout(()=>{ window.location.href = 'tracker.html'; }, 160);
-  });
-
-  // splash hide after short delay
-  window.addEventListener('load', ()=>{
-    setTimeout(()=> {
-      const s = document.getElementById('splash');
-      if(s) s.classList.add('splash-hide');
-      // remove after animation
-      setTimeout(()=>s && s.remove(), 800);
-    }, 900);
-  });
-</script>
+  <footer>Made with ❤️ to help you save smarter!</footer>
 </body>
 </html>
