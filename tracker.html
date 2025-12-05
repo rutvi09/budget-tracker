@@ -24,6 +24,8 @@
           <select id="currency-select" title="Select display currency"></select>
         </div>
 
+        <div class="control spacer-control"></div>
+
         <div class="control mode-control">
           <label for="theme-toggle">Theme</label>
           <button id="theme-toggle" class="btn small">🌙</button>
@@ -34,17 +36,13 @@
     <main class="main-grid">
       <section class="card form-card">
         <h2>➕ Add Expense</h2>
-
         <form id="expense-form" class="form">
           <input id="expense-title" placeholder="Title (e.g., Pizza)" required />
-
-          <div class="row inline-row">
+          <div class="row">
             <input id="expense-amount" type="number" step="0.01" placeholder="Amount" required />
             <select id="input-currency" title="Currency for this amount"></select>
-            <input id="expense-date" type="date" />
           </div>
-
-          <div class="row inline-row">
+          <div class="row">
             <select id="expense-category">
               <option value="Food">🍔 Food</option>
               <option value="Shopping">🛍️ Shopping</option>
@@ -53,9 +51,8 @@
               <option value="Entertainment">🎮 Entertainment</option>
               <option value="Other">📦 Other</option>
             </select>
-            <input id="custom-category" placeholder="Custom category (optional)" style="display:none" />
+            <input id="expense-date" type="date" />
           </div>
-
           <div class="row actions">
             <button type="submit" class="btn primary">Add</button>
             <button type="button" id="clear-all" class="btn warn">Clear All</button>
@@ -66,7 +63,7 @@
 
         <h3>🎯 Savings Goal</h3>
         <div class="goal">
-          <div class="row inline-row">
+          <div class="row">
             <input id="goal-amount-input" type="number" step="0.01" placeholder="Goal amount" />
             <select id="goal-currency" title="Goal currency"></select>
           </div>
