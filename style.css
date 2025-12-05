@@ -1,90 +1,56 @@
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #FFF9F0; 
-    color: #333; 
-    display: flex;
-    justify-content: center;
-    padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #f3f7ff;
+  text-align: center;
+  margin: 0;
 }
 
 .container {
-    background-color: #FFFFFF; 
-    padding: 30px;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 800px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-    box-sizing: border-box;
-}
-
-h1 {
-    text-align: center;
-    color: #FF6F00; 
-    font-size: 2rem;
-}
-
-.form, .dashboard {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
+  width: 90%;
+  max-width: 450px;
+  background: white;
+  padding: 20px;
+  margin: 30px auto;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
 }
 
 input, select, button {
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #CCC;
-    outline: none;
-    font-size: 1rem;
+  padding: 10px;
+  width: 90%;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
 button {
-    background-color: #FFA000; 
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
+  background: #4b7bec;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
 button:hover {
-    background-color: #FF5722; 
+  background: #3867d6;
 }
 
 #expense-list {
-    list-style: none;
-    padding: 0;
-    max-height: 300px; 
-    overflow-y: auto;
+  list-style: none;
+  padding: 0;
 }
 
 #expense-list li {
-    background-color: #FFF3E0; 
-    margin: 6px 0;
-    padding: 10px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+  background: #e9efff;
+  padding: 10px;
+  margin: 6px 0;
+  border-radius: 6px;
 }
 
-canvas {
-    max-width: 100% !important;
-    height: auto !important;
+.currency-label {
+  font-weight: bold;
 }
 
-@media (max-width: 600px) {
-    .container {
-        padding: 20px;
-    }
-    h1 {
-        font-size: 1.6rem;
-    }
-    input, select, button {
-        font-size: 0.95rem;
-        padding: 10px;
-    }
-    #expense-list li {
-        font-size: 0.9rem;
-        flex-direction: column;
-        align-items: flex-start;
-    }
+/* Space added below dropdown */
+.spacer {
+  height: 15px;
 }
