@@ -1,4 +1,5 @@
 :root{
+  /* Peach + Mint pastel palette */
   --bg:#FFF7F3;
   --card-bg:#ffffff;
   --text:#2b2b2b;
@@ -13,12 +14,11 @@
 /* base */
 *{box-sizing:border-box}
 body{
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
   background: radial-gradient(1200px 400px at 10% 10%, rgba(255,191,150,0.12), transparent),
               linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
   color:var(--text);
   margin:0;padding:18px;
-  -webkit-font-smoothing:antialiased;
 }
 
 /* Splash */
@@ -27,10 +27,10 @@ body{
   background:linear-gradient(135deg, rgba(255,196,160,0.95), rgba(159,228,199,0.95));
   z-index:9999;transition:opacity .6s ease, transform .6s ease;
 }
-.splash-inner{display:flex;flex-direction:column;align-items:center;gap:6px;transform:translateY(0);animation:pop 900ms ease}
+.splash-inner{display:flex;flex-direction:column;align-items:center;gap:6px;animation:pop 900ms ease}
 @keyframes pop{0%{transform:translateY(8px) scale(.96)}50%{transform:translateY(-6px) scale(1.02)}100%{transform:translateY(0) scale(1)}}
 .splash .mascot{font-size:44px}
-.splash .splash-text{font-weight:700;font-size:20px;color:#fff;letter-spacing:0.6px}
+.splash .splash-text{font-weight:700;font-size:20px;color:#fff}
 .splash-hide{opacity:0;pointer-events:none;transform:scale(.98)}
 
 /* Intro */
@@ -41,7 +41,7 @@ body{
 .hook-line{margin:8px 0 0 0;font-size:1.5rem;line-height:1.15;color:var(--text);font-weight:800}
 .lead{color:var(--muted);margin-top:8px}
 
-/* Buttons & selects */
+/* common controls */
 .select, input, select, button{
   padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:0.95rem;
 }
@@ -53,16 +53,14 @@ body{
 .btn.large{padding:12px 18px;font-size:1rem;width:100%}
 .btn.selected{outline:3px solid rgba(159,228,199,0.25)}
 
-/* topbar & app layout */
+/* topbar */
 .app{max-width:1100px;margin:0 auto}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
 .brand{display:flex;align-items:center;gap:10px}
 .mascot-small{font-size:20px}
 .top-controls{display:flex;gap:12px;align-items:center}
-.control{display:flex;flex-direction:column;gap:6px}
-.currency-control select, .mode-control button{padding:8px 10px}
 
-/* main grid */
+/* layout */
 .main-grid{display:grid;grid-template-columns:360px 1fr;gap:14px}
 @media (max-width:900px){.main-grid{grid-template-columns:1fr}}
 
@@ -70,7 +68,8 @@ body{
 .card{background:var(--card-bg);padding:16px;border-radius:12px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.03)}
 .form-card h2{margin-top:0}
 .row{display:flex;gap:8px;align-items:center}
-.row input, .row select{flex:1;padding:10px;border-radius:8px;border:1px solid #eee}
+.inline-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row input, .row select{flex:1;padding:12px;border-radius:10px;border:1px solid #eee;min-height:44px}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 
 /* summary */
@@ -89,9 +88,9 @@ body{
 /* footer */
 .footer{text-align:center;padding:12px;margin-top:18px;color:var(--muted);font-size:0.9rem}
 
-/* small screens spacing */
+/* mobile tweaks */
 @media (max-width:600px){
-  body{padding:12px}
+  body{padding:10px}
   .card{padding:14px}
   .topbar{flex-direction:column;align-items:flex-start;gap:12px}
   .main-grid{gap:12px}
@@ -100,7 +99,7 @@ body{
   .btn.large{width:100%}
 }
 
-/* dark mode overrides */
+/* dark mode */
 body.dark{
   --bg:#08121a;
   --card-bg:#07121a;
@@ -109,4 +108,4 @@ body.dark{
   --primary:#ffb59a;
   --accent:#74dbb0;
   background:linear-gradient(180deg,#041226 0%, #08121a 100%);
-} 
+}
