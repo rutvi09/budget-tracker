@@ -1,18 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Expense Tracker</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body class="home">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Tracker</title>
 
-<div class="welcome-box">
-  <h1>Expense Tracker</h1>
-  <p class="tag">Smart tracking for smarter savings 💹</p>
-  <a href="tracker.html" class="start-btn">Get Started</a>
-</div>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #FFF9F0; 
+            color: #333; 
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #FFFFFF; 
+            padding: 30px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: #FF6F00; 
+            font-size: 2rem;
+        }
+
+        .form, .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        input, select, button {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #CCC;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #FFA000; 
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #FF5722; 
+        }
+
+        #expense-list {
+            list-style: none;
+            padding: 0;
+            max-height: 300px; 
+            overflow-y: auto;
+        }
+
+        #expense-list li {
+            background-color: #FFF3E0; 
+            margin: 6px 0;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        canvas {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            input, select, button {
+                font-size: 0.95rem;
+                padding: 10px;
+            }
+            #expense-list li {
+                font-size: 0.9rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- html2canvas + jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>💼 Budget Tracker</h1>
+
+        <!-- Currency Selector -->
+        <label>Select Currency:</label>
+        <select id="currency-select" onchange="updateUI()">
+            <option value="$">$ - USD</option>
+            <option value="₹">₹ - INR</option>
+        </select>
+
+        <!-- Add Expense Form -->
+        <div class="form">
+            <input type="text" id="expense-title" placeholder="Expense title">
+            <input type="number" id="expense-amount" placeholder="Amount">
+            <select id="expense-category">
+                <option value="Food">Food</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Travel">Travel</option>
+                <option value="Others">Others</option>
+            </select>
+            <input type="text" id="custom-category" placeholder="Enter custom category" style="display:none;">
+            <button type="button" onclick="addExpense()">Add Expense</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="dashboard">
+            <h2>Total Spent: <span id="total-spent">0</span></h2>
+
+            <h2>Set Savings Goal:</h2>
+            <input type="number" id="savings-goal" placeholder="Enter goal amount">
+            <button type="button" onclick="updateGoal()">Set Goal</button>
+            <p>Progress: <span id="goal-progress">0</span> / <span id="goal-amount">0</span></p>
+            <p id="goal-msg" style="font-weight:bold; margin-top:5px;"></p>
+            <p id="goal-remaining" style="font-weight:bold; margin-top:5px;"></p>
+
+            <h2>Expenses:</h2>
+            <ul id="expense-list"></ul>
+
+            <h2>Category-wise Charts:</h2>
+            <canvas id="categoryBarChart"></canvas>
+            <canvas id="categoryPieChart" style="margin-top:20px;"></canvas>
+
+            <h2>Download Data:</h2>
+            <button type="button" onclick="downloadPDF()">Download as PDF</button>
+            <button type="button" onclick="downloadImage()">Download as Image</button>
+        </div>
+    </div>
+
+<script>
+let expenses = [];
+let savingsGoal = 0;
+
+const categoryLabels = ['Food','Shopping','Travel','Others'];
+const categoryColors = ['#FFCDD2','#FFEB3B','#FF9800','#B39DDB'];
+
+// Charts
+const barCtx = document.getElementById('categoryBarChart').getContext('2d');
+let categoryBarChart = new Chart(barCtx,{
+    type:'bar',
+    data:{ labels: categoryLabels, datasets:[{ data:[0,0,0,0], backgroundColor: categoryColors }] },
+    options:{ responsive:true, scales:{ y:{ beginAtZero:true } } }
+});
+
+const pieCtx = document.getElementById('categoryPieChart').getContext('2d');
+let categoryPieChart = new Chart(pieCtx,{
+    type:'pie',
+    data:{ labels: categoryLabels, datasets:[{ data:[0,0,0,0], backgroundColor: categoryColors }] },
+    options:{ responsive:true }
+});
+
+// Custom category input
+const categorySelect = document.getElementById('expense-category');
+const customInput = document.getElementById('custom-category');
+categorySelect.addEventListener('change', ()=>{
+    if(categorySelect.value==='Others'){ customInput.style.display='block'; customInput.focus(); }
+    else{ customInput.style.display='none'; customInput.value=''; }
+});
+
+// Add expense
+function addExpense(){
+    const title = document.getElementById("expense-title").value.trim();
+    const amount = parseFloat(document.getElementById("expense-amount").value);
+    let category = categorySelect.value;
+
+    if(category==='Others' && customInput.value.trim()!==''){
+        category = 'Others';
+    }
+
+    if(!title || isNaN(amount) || amount<=0){ alert("Enter valid title and amount"); return; }
+
+    expenses.push({title, amount, category});
+    updateUI();
+
+    document.getElementById("expense-title").value='';
+    document.getElementById("expense-amount").value='';
+    customInput.value='';
+}
+
+// Update Goal
+function updateGoal(){
+    const goalInput = parseFloat(document.getElementById("savings-goal").value);
+    if(isNaN(goalInput) || goalInput<=0){ alert("Enter valid goal"); return; }
+    savingsGoal = goalInput;
+    updateUI();
+}
+
+// Update UI
+function updateUI(){
+    const currency = document.getElementById("currency-select").value;
+    const totalSpent = expenses.reduce((sum,e)=>sum+e.amount,0);
+
+    document.getElementById("total-spent").innerText = `${currency}${totalSpent.toFixed(2)}`;
+
+    const list = document.getElementById("expense-list");
+    list.innerHTML='';
+    expenses.forEach((e,i)=>{
+        const li=document.createElement('li');
+        li.innerHTML=`${e.title} - ${currency}${e.amount.toFixed(2)} (${e.category}) <button onclick="deleteExpense(${i})">❌</button>`;
+        list.appendChild(li);
+    });
+
+    const goalMsgEl = document.getElementById('goal-msg');
+    const goalRemainingEl = document.getElementById('goal-remaining');
+    document.getElementById("goal-progress").innerText = `${currency}${totalSpent.toFixed(2)}`;
+    document.getElementById("goal-amount").innerText = `${currency}${savingsGoal.toFixed(2)}`;
+
+    if(savingsGoal > 0){
+        const remaining = savingsGoal - totalSpent;
+        if(remaining > 0){
+            goalMsgEl.innerText = "You are below your savings goal!";
+            goalMsgEl.style.color = '#FF9800';
+            goalRemainingEl.innerText = `You are ${currency}${remaining.toFixed(2)} below your goal.`;
+            goalRemainingEl.style.color = '#4CAF50';
+        } else if(remaining === 0){
+            goalMsgEl.innerText = "🎉 You reached your savings goal!";
+            goalMsgEl.style.color = '#4CAF50';
+            goalRemainingEl.innerText = "";
+        } else {
+            goalMsgEl.innerText = "⚠️ You have exceeded your savings goal!";
+            goalMsgEl.style.color = '#F44336';
+            goalRemainingEl.innerText = `Exceeded by ${currency}${Math.abs(remaining).toFixed(2)}!`;
+            goalRemainingEl.style.color = '#F44336';
+        }
+    } else {
+        goalMsgEl.innerText = "";
+        goalRemainingEl.innerText = "";
+    }
+
+    const totals = { Food:0, Shopping:0, Travel:0, Others:0 };
+    expenses.forEach(e=>{
+        totals[e.category] += e.amount;
+    });
+
+    categoryBarChart.data.datasets[0].data = categoryLabels.map(l=>totals[l]);
+    categoryPieChart.data.datasets[0].data = categoryLabels.map(l=>totals[l]);
+    categoryBarChart.update();
+    categoryPieChart.update();
+}
+
+// Delete expense
+function deleteExpense(index){ expenses.splice(index,1); updateUI(); }
+
+// Download PDF
+function downloadPDF(){
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p','pt','a4');
+    html2canvas(document.querySelector('.container')).then(canvas=>{
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth=595;
+        const imgHeight=canvas.height*imgWidth/canvas.width;
+        doc.addImage(imgData,'PNG',0,0,imgWidth,imgHeight);
+        doc.save('budget-tracker.pdf');
+    });
+}
+
+// Download image
+function downloadImage(){
+    html2canvas(document.querySelector('.container')).then(canvas=>{
+        const link=document.createElement('a');
+        link.download='budget-tracker.png';
+        link.href=canvas.toDataURL();
+        link.click();
+    });
+}
+
+updateUI();
+</script>
 
 </body>
 </html>
