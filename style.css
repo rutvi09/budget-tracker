@@ -14,11 +14,12 @@
 /* base */
 *{box-sizing:border-box}
 body{
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
   background: radial-gradient(1200px 400px at 10% 10%, rgba(255,191,150,0.12), transparent),
               linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
   color:var(--text);
   margin:0;padding:18px;
+  -webkit-font-smoothing:antialiased;
 }
 
 /* Splash */
@@ -27,10 +28,10 @@ body{
   background:linear-gradient(135deg, rgba(255,196,160,0.95), rgba(159,228,199,0.95));
   z-index:9999;transition:opacity .6s ease, transform .6s ease;
 }
-.splash-inner{display:flex;flex-direction:column;align-items:center;gap:6px;animation:pop 900ms ease}
+.splash-inner{display:flex;flex-direction:column;align-items:center;gap:6px;transform:translateY(0);animation:pop 900ms ease}
 @keyframes pop{0%{transform:translateY(8px) scale(.96)}50%{transform:translateY(-6px) scale(1.02)}100%{transform:translateY(0) scale(1)}}
 .splash .mascot{font-size:44px}
-.splash .splash-text{font-weight:700;font-size:20px;color:#fff}
+.splash .splash-text{font-weight:700;font-size:20px;color:#fff;letter-spacing:0.6px}
 .splash-hide{opacity:0;pointer-events:none;transform:scale(.98)}
 
 /* Intro */
@@ -38,10 +39,11 @@ body{
 .intro-card{width:100%;padding:22px;border-radius:16px;box-shadow:var(--shadow);background:linear-gradient(180deg,#fff,#fff0f6)}
 .intro-top{display:flex;flex-direction:column;align-items:center;gap:6px}
 .mascot-large{font-size:48px}
-.hook-line{margin:8px 0 0 0;font-size:1.5rem;line-height:1.15;color:var(--text);font-weight:800}
+h1{margin:0;font-size:1.6rem;color:var(--text)}
+.tagline{margin:0;font-weight:600;color:var(--muted);font-size:1rem}
 .lead{color:var(--muted);margin-top:8px}
 
-/* common controls */
+/* Buttons & selects */
 .select, input, select, button{
   padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:0.95rem;
 }
@@ -53,14 +55,16 @@ body{
 .btn.large{padding:12px 18px;font-size:1rem;width:100%}
 .btn.selected{outline:3px solid rgba(159,228,199,0.25)}
 
-/* topbar */
+/* topbar & app layout */
 .app{max-width:1100px;margin:0 auto}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
 .brand{display:flex;align-items:center;gap:10px}
 .mascot-small{font-size:20px}
 .top-controls{display:flex;gap:12px;align-items:center}
+.control{display:flex;flex-direction:column;gap:6px}
+.currency-control select, .mode-control button{padding:8px 10px}
 
-/* layout */
+/* main grid */
 .main-grid{display:grid;grid-template-columns:360px 1fr;gap:14px}
 @media (max-width:900px){.main-grid{grid-template-columns:1fr}}
 
@@ -68,8 +72,7 @@ body{
 .card{background:var(--card-bg);padding:16px;border-radius:12px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.03)}
 .form-card h2{margin-top:0}
 .row{display:flex;gap:8px;align-items:center}
-.inline-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.row input, .row select{flex:1;padding:12px;border-radius:10px;border:1px solid #eee;min-height:44px}
+.row input, .row select{flex:1;padding:10px;border-radius:8px;border:1px solid #eee}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 
 /* summary */
@@ -88,9 +91,9 @@ body{
 /* footer */
 .footer{text-align:center;padding:12px;margin-top:18px;color:var(--muted);font-size:0.9rem}
 
-/* mobile tweaks */
+/* small screens spacing */
 @media (max-width:600px){
-  body{padding:10px}
+  body{padding:12px}
   .card{padding:14px}
   .topbar{flex-direction:column;align-items:flex-start;gap:12px}
   .main-grid{gap:12px}
@@ -99,7 +102,7 @@ body{
   .btn.large{width:100%}
 }
 
-/* dark mode */
+/* dark mode overrides */
 body.dark{
   --bg:#08121a;
   --card-bg:#07121a;
