@@ -1,69 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Budget Tracker</title>
-
-    <link rel="stylesheet" href="style.css">
-
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- html2canvas + jsPDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budget Tracker</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <div class="container">
-        <h1>💼 Budget Tracker</h1>
 
-        <!-- Currency Selector -->
-        <label>Select Currency:</label>
-        <select id="currency-select" onchange="updateUI()">
-            <option value="$">$ - USD</option>
-            <option value="₹">₹ - INR</option>
+<div class="container">
+
+    <h1>Budget Tracker</h1>
+
+    <!-- Currency Selector -->
+    <label class="currency-label">Select Currency:</label>
+    <select id="currency-select" onchange="updateUI()">
+        <option value="$">$ - USD</option>
+        <option value="₹">₹ - INR</option>
+        <option value="€">€ - EUR</option>
+        <option value="£">£ - GBP</option>
+        <option value="¥">¥ - JPY</option>
+    </select>
+
+    <div class="spacer"></div> <!-- Extra spacing added -->
+
+    <h2>Total Spent: <span id="total-spent">$0</span></h2>
+
+    <form id="expense-form">
+        <input type="text" id="title" placeholder="Expense Title" required>
+        <input type="number" id="amount" placeholder="Amount" required>
+        <select id="category">
+            <option>Food</option>
+            <option>Travel</option>
+            <option>Shopping</option>
+            <option>Other</option>
         </select>
+        <button type="submit">Add Expense</button>
+    </form>
 
-        <!-- Add Expense Form -->
-        <div class="form">
-            <input type="text" id="expense-title" placeholder="Expense title">
-            <input type="number" id="expense-amount" placeholder="Amount">
-            <select id="expense-category">
-                <option value="Food">Food</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Travel">Travel</option>
-                <option value="Others">Others</option>
-            </select>
-            <input type="text" id="custom-category" placeholder="Enter custom category" style="display:none;">
-            <button type="button" onclick="addExpense()">Add Expense</button>
-        </div>
+    <h3>Expenses</h3>
+    <ul id="expense-list"></ul>
 
-        <!-- Dashboard -->
-        <div class="dashboard">
-            <h2>Total Spent: <span id="total-spent">0</span></h2>
+    <h3>Set Savings Goal</h3>
+    <form id="goal-form">
+        <input type="number" id="goal-amount-input" placeholder="Goal Amount" required>
+        <button type="submit">Set Goal</button>
+    </form>
 
-            <h2>Set Savings Goal:</h2>
-            <input type="number" id="savings-goal" placeholder="Enter goal amount">
-            <button type="button" onclick="updateGoal()">Set Goal</button>
-            <p>Progress: <span id="goal-progress">0</span> / <span id="goal-amount">0</span></p>
-            <p id="goal-msg" style="font-weight:bold; margin-top:5px;"></p>
-            <p id="goal-remaining" style="font-weight:bold; margin-top:5px;"></p>
+    <p id="goal-remaining"></p>
 
-            <h2>Expenses:</h2>
-            <ul id="expense-list"></ul>
+</div>
 
-            <h2>Category-wise Charts:</h2>
-            <canvas id="categoryBarChart"></canvas>
-            <canvas id="categoryPieChart" style="margin-top:20px;"></canvas>
-
-            <h2>Download Data:</h2>
-            <button type="button" onclick="downloadPDF()">Download as PDF</button>
-            <button type="button" onclick="downloadImage()">Download as Image</button>
-        </div>
-    </div>
-
-    <script src="app.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
