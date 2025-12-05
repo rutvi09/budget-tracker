@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Welcome — Budget Buddy</title>
+  <title>Budget Buddy — Welcome</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Splash (short) -->
+  <!-- Splash -->
   <div id="splash" class="splash">
     <div class="splash-inner">
       <div class="mascot">🐷</div>
@@ -27,8 +27,8 @@
         <select id="initial-currency" class="select"></select>
       </div>
 
-      <div class="form-row" style="margin-top:6px">
-        <label>Choose theme</label>
+      <div class="form-row" style="margin-top:8px">
+        <label>Theme</label>
         <div class="theme-choices">
           <button id="theme-light" class="btn small">Light 🌞</button>
           <button id="theme-dark" class="btn small">Dark 🌙</button>
@@ -48,9 +48,7 @@
   const CURRENCIES = {
     "USD":"$ - USD","INR":"₹ - INR","EUR":"€ - EUR","GBP":"£ - GBP","JPY":"¥ - JPY",
     "AUD":"A$ - AUD","CAD":"C$ - CAD","CHF":"CHF - CHF","CNY":"¥ - CNY","HKD":"HK$ - HKD",
-    "SGD":"S$ - SGD","KRW":"₩ - KRW","AED":"د.إ - AED","ZAR":"R - ZAR","PHP":"₱ - PHP",
-    "MYR":"RM - MYR","THB":"฿ - THB","IDR":"Rp - IDR","MXN":"$ - MXN","BRL":"R$ - BRL",
-    "TRY":"₺ - TRY","SEK":"kr - SEK","NOK":"kr - NOK","DKK":"kr - DKK","PLN":"zł - PLN"
+    "SGD":"S$ - SGD","KRW":"₩ - KRW","AED":"د.إ - AED","ZAR":"R - ZAR","PHP":"₱ - PHP"
   };
 
   const sel = document.getElementById('initial-currency');
@@ -61,6 +59,7 @@
     sel.appendChild(opt);
   });
 
+  // preload saved state
   const savedState = localStorage.getItem('bt_state_v2');
   if(savedState){
     try {
@@ -71,13 +70,11 @@
 
   document.getElementById('theme-light').addEventListener('click', ()=>{
     localStorage.setItem('bt_initial_theme','light');
-    document.body.classList.remove('dark');
-    highlightThemeButton();
+    document.body.classList.remove('dark'); highlightThemeButton();
   });
   document.getElementById('theme-dark').addEventListener('click', ()=>{
     localStorage.setItem('bt_initial_theme','dark');
-    document.body.classList.add('dark');
-    highlightThemeButton();
+    document.body.classList.add('dark'); highlightThemeButton();
   });
 
   function highlightThemeButton(){
@@ -92,15 +89,17 @@
     localStorage.setItem('bt_initial_displayCurrency', currency);
     const t = localStorage.getItem('bt_initial_theme') || 'light';
     localStorage.setItem('bt_initial_theme', t);
-    setTimeout(()=>{ window.location.href = 'tracker.html'; }, 160);
+    // small delay for smooth UX
+    setTimeout(()=>{ window.location.href = 'tracker.html'; }, 150);
   });
 
+  // splash hide
   window.addEventListener('load', ()=>{
     setTimeout(()=> {
       const s = document.getElementById('splash');
       if(s) s.classList.add('splash-hide');
-      setTimeout(()=>s && s.remove(), 800);
-    }, 900);
+      setTimeout(()=> s && s.remove(), 700);
+    }, 800);
   });
 </script>
 </body>
