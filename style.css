@@ -1,86 +1,91 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #FFF9F0;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background-color: #FFF9F0; 
+  color: #333; 
+  display: flex;
+  justify-content: center;
+  padding: 10px;
 }
 
 .container {
-    background-color: #FFFFFF;
-    padding: 30px;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 800px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-    box-sizing: border-box;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 800px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  box-sizing: border-box;
 }
 
 h1 {
-    text-align: center;
-    color: #FF6F00;
-    font-size: 2rem;
+  text-align: center;
+  color: #FF6F00;
+  font-size: 2rem;
 }
 
 .form, .dashboard {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-input, select, button {
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #CCC;
-    font-size: 1rem;
+input, select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #CCC;
+  outline: none;
+  font-size: 1rem;
 }
 
-button {
-    background-color: #FFA000;
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
+.icon-buttons {
+  display: flex;
+  gap: 15px;
+  font-size: 1.6rem;
+  margin-top: 10px;
+  cursor: pointer;
 }
 
-button:hover {
-    background-color: #FF5722;
+.icon-buttons span:hover {
+  transform: scale(1.2);
+  transition: 0.3s;
+}
+
+.goal-icon {
+  cursor: pointer;
+  margin-left: 10px;
 }
 
 #expense-list {
-    list-style: none;
-    padding: 0;
-    max-height: 300px;
-    overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  max-height: 250px;
+  overflow-y: auto;
 }
 
 #expense-list li {
-    background-color: #FFF3E0;
-    margin: 6px 0;
-    padding: 10px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
+  background-color: #FFF3E0;
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.today-expense {
+  background-color: #FFF59D;
 }
 
 canvas {
-    max-width: 100%;
+  max-width: 100% !important;
+  height: auto !important;
 }
 
 @media (max-width: 600px) {
-    .container {
-        padding: 20px;
-    }
-    h1 {
-        font-size: 1.6rem;
-    }
-    input, select, button {
-        padding: 10px;
-    }
-    #expense-list li {
-        font-size: 0.9rem;
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .container { padding: 15px; }
+  h1 { font-size: 1.5rem; }
+  input, select { font-size: 0.95rem; padding: 8px; }
+  .icon-buttons { font-size: 1.4rem; gap: 10px; }
+  #expense-list li { font-size: 0.9rem; }
 }
