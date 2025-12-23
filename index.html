@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budget Tracker</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h1>💼 Budget Tracker</h1>
+
+  <!-- Expense Form -->
+  <div class="form">
+    <input type="text" id="expense-title" placeholder="Expense title">
+    <input type="number" id="expense-amount" placeholder="Amount">
+
+    <select id="expense-category">
+      <option value="Food">Food</option>
+      <option value="Shopping">Shopping</option>
+      <option value="Travel">Travel</option>
+      <option value="Health">Health</option>
+      <option value="Entertainment">Entertainment</option>
+      <option value="Bills">Bills</option>
+      <option value="Others">Others</option>
+    </select>
+
+    <input type="text" id="custom-category" placeholder="Enter custom category" style="display:none;">
+    <label>Date:</label>
+    <input type="date" id="expense-date">
+    <label>Time:</label>
+    <input type="time" id="expense-time">
+
+    <div class="icon-buttons">
+      <span title="Add Expense" onclick="addExpense()">➕</span>
+      <span title="Export CSV" onclick="downloadCSV()">📄</span>
+      <span title="Export PDF" onclick="downloadPDF()">📑</span>
+      <span title="Reset All Expenses" onclick="resetExpenses()">🗑️</span>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard">
+    <h2>Total Spent: Rs <span id="total-spent">0</span></h2>
+
+    <h2>Set Savings Goal:</h2>
+    <input type="number" id="savings-goal" placeholder="Enter goal amount">
+    <span onclick="updateGoal()" class="goal-icon" title="Set Goal">💰</span>
+
+    <p id="goal-msg"></p>
+    <p id="goal-remaining"></p>
+
+    
+    <h2>Spending Overview:</h2>
+    <p id="daily-total">Daily: Rs 0.00</p>
+    <p id="monthly-total">Monthly: Rs 0.00</p>
+    <p id="yearly-total">Yearly: Rs 0.00</p>
+
+    <h2>Expenses:</h2>
+    <ul id="expense-list"></ul>
+
+    <h2>Category Chart:</h2>
+    <select id="category-chart-select" onchange="updateCategoryChartType(this.value)">
+      <option value="bar">Bar</option>
+      <option value="pie">Pie</option>
+      <option value="doughnut">Doughnut</option>
+    </select>
+    <canvas id="categoryChart"></canvas>
+
+    <h2>Spending Trends:</h2>
+    <select id="trend-chart-select" onchange="updateTrendChart(this.value)">
+      <option value="daily">Daily</option>
+      <option value="monthly">Monthly</option>
+      <option value="quarterly">Quarterly</option>
+      <option value="yearly">Yearly</option>
+    </select>
+    <canvas id="trendChart"></canvas>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
