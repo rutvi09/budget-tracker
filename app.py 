@@ -1,0 +1,31 @@
+from flask import Flask, request, render_template
+import mysql.connector
+
+app = Flask(__name__)
+
+# Database connection
+db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="your_password",
+    database="your_database"
+)
+
+cursor = db.cursor()
+
+@app.route('/')
+def home():
+    return render_template('login.html')
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form['username']
+    password = request.form['password']
+
+    sql = "INSERT INTO users (username, password) VALUES (%s, %s)"
+    values = (username, password)
+
+    cursor.execute(sql, values)
+    db.commit()
+
+    return "Login successful! Data saved in database."
